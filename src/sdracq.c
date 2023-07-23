@@ -26,7 +26,8 @@ extern uint64_t sdraccuisition(sdrch_t *sdr, double *power)
     unmlock(hreadmtx);
 
     /* acquisition integration */
-    for (i=0;i<sdr->acq.intg;i++) {
+    for (i=0; i < sdr->acq.intg; i++) 
+	{
         /* get current 1ms data */
         rcvgetbuff(&sdrini,buffloc,2*sdr->nsamp,sdr->ftype,sdr->dtype,data);
         buffloc+=sdr->nsamp;
@@ -36,7 +37,8 @@ extern uint64_t sdraccuisition(sdrch_t *sdr, double *power)
             sdr->acq.nfreq,sdr->crate,sdr->acq.nfft,sdr->xcode,power);
 
         /* check acquisition result */
-        if (checkacquisition(power,sdr)) {
+        if (checkacquisition(power,sdr))
+		{
             sdr->flagacq=ON;
             break;
         }
@@ -50,7 +52,7 @@ extern uint64_t sdraccuisition(sdrch_t *sdr, double *power)
     /* set acquisition result */
     if (sdr->flagacq) {
         /* set buffer location at top of code */
-        buffloc+=-(i+1)*sdr->nsamp+sdr->acq.acqcodei;
+        buffloc+=-(i+1) * sdr->nsamp + sdr->acq.acqcodei;
         sdr->trk.carrfreq=sdr->acq.acqfreq;
         sdr->trk.codefreq=sdr->crate;
     }
@@ -78,8 +80,12 @@ extern int checkacquisition(double *P, sdrch_t *sdr)
 
     /* C/N0 calculation */
     /* excluded index */
-    exinds=codei-2*sdr->nsampchip; if(exinds<0) exinds+=sdr->nsamp;
-    exinde=codei+2*sdr->nsampchip; if(exinde>=sdr->nsamp) exinde-=sdr->nsamp;
+    exinds=codei-2*sdr->nsampchip; 
+	if(exinds<0) 
+		exinds+=sdr->nsamp;
+    exinde=codei+2*sdr->nsampchip; 
+	if(exinde>=sdr->nsamp) 
+		exinde-=sdr->nsamp;
     meanP=meanvd(&P[freqi*sdr->nsamp],sdr->nsamp,exinds,exinde); /* mean */
     sdr->acq.cn0=10*log10(maxP/meanP/sdr->ctime);
 
@@ -91,5 +97,5 @@ extern int checkacquisition(double *P, sdrch_t *sdr)
     sdr->acq.freqi=freqi;
     sdr->acq.acqfreq=sdr->acq.freq[freqi];
 
-    return sdr->acq.peakr>ACQTH;
+    return (sdr->acq.peakr > ACQTH);
 }

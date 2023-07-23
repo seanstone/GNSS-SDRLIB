@@ -35,6 +35,8 @@ static const int DEFAULT_BUFFER_SIZE = 16 * (1L << 20);		// 16 MB / endpoint
 
 static const int USB_TIMEOUT = 1000;	// in milliseconds
 
+
+
 fusb_devhandle *
 fusb_sysconfig::make_devhandle (usb_dev_handle *udh)
 {

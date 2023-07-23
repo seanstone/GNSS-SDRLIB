@@ -30,9 +30,6 @@
     <Filter Include="sdr\rcv\gn3s">
       <UniqueIdentifier>{ef2e6ce0-07d5-48fa-a7f0-26648c181962}</UniqueIdentifier>
     </Filter>
-    <Filter Include="sdr\rcv\stereo">
-      <UniqueIdentifier>{cf4389c9-5a96-49bf-90f3-7970a2102af3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="header">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
@@ -83,12 +80,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\sdrinit.c">
       <Filter>sdr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\rcv\stereo\stereo.c">
-      <Filter>sdr\rcv\stereo</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\rcv\GN3S\fusb_win32.cpp">
-      <Filter>sdr\rcv\gn3s</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\rcv\GN3S\fx2.cpp">
       <Filter>sdr\rcv\gn3s</Filter>
@@ -141,6 +132,9 @@
     <ClCompile Include="..\..\lib\rtklib\rtkcmn.c">
       <Filter>sdr\lib\rtklib</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\rcv\gn3s\fusb_win32.cpp">
+      <Filter>sdr\rcv\gn3s</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="monitordlg.h">
@@ -154,9 +148,6 @@
     </ClInclude>
     <ClInclude Include="maindlg.h">
       <Filter>header</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\rcv\stereo\stereo.h">
-      <Filter>sdr\rcv\stereo</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\rcv\GN3S\fx2.h">
       <Filter>sdr\rcv\gn3s</Filter>

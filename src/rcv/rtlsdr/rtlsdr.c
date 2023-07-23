@@ -7,6 +7,8 @@
 
 static rtlsdr_dev_t *dev=NULL;
 
+static uint32_t rtlsdr_read_buf_size = 0;
+
 /* rtlsdr stream callback  -----------------------------------------------------
 * callback for receiving RF data
 *-----------------------------------------------------------------------------*/
@@ -117,7 +119,7 @@ extern int rtlsdr_start(void)
 
     /* start stream and stay there until we kill the stream */
     ret=rtlsdr_read_async(dev,stream_callback_rtlsdr,
-        NULL,RTLSDR_ASYNC_BUF_NUMBER,2*RTLSDR_DATABUFF_SIZE);
+        NULL,RTLSDR_ASYNC_BUF_NUMBER,2*rtlsdr_read_buf_size);
 
     if (ret<0&&!sdrstat.stopflag) {
         SDRPRINTF("error: failed to read in async mode\n");
@@ -150,10 +152,10 @@ extern void rtlsdr_exp(uint8_t *buf, int n, char *expbuf)
 *-----------------------------------------------------------------------------*/
 extern void rtlsdr_getbuff(uint64_t buffloc, int n, char *expbuf)
 {
-    uint64_t membuffloc=2*buffloc%(MEMBUFFLEN*2*RTLSDR_DATABUFF_SIZE);
+    uint64_t membuffloc=2*buffloc%(MEMBUFFLEN*2* rtlsdr_read_buf_size);
     int nout;
     n=2*n;
-    nout=(int)((membuffloc+n)-(MEMBUFFLEN*2*RTLSDR_DATABUFF_SIZE));
+    nout=(int)((membuffloc+n)-(MEMBUFFLEN*2* rtlsdr_read_buf_size));
 
     mlock(hbuffmtx);
     if (nout>0) {
@@ -176,12 +178,12 @@ extern void frtlsdr_pushtomembuf(void)
     mlock(hbuffmtx);
 
     nread=fread(
-        &sdrstat.buff[(sdrstat.buffcnt%MEMBUFFLEN)*2*RTLSDR_DATABUFF_SIZE],
-        1,2*RTLSDR_DATABUFF_SIZE,sdrini.fp1);
+        &sdrstat.buff[(sdrstat.buffcnt%MEMBUFFLEN)*2* rtlsdr_read_buf_size],
+        1,2* rtlsdr_read_buf_size,sdrini.fp1);
 
     unmlock(hbuffmtx);
 
-    if (nread<2*RTLSDR_DATABUFF_SIZE) {
+    if (nread<2* rtlsdr_read_buf_size) {
         sdrstat.stopflag=ON;
         SDRPRINTF("end of file!\n");
     }
@@ -189,4 +191,9 @@ extern void frtlsdr_pushtomembuf(void)
     mlock(hreadmtx);
     sdrstat.buffcnt++;
     unmlock(hreadmtx);
+}
+
+extern void rtlsdr_set_rx_buf(uint32_t buf_size)
+{
+	rtlsdr_read_buf_size = buf_size;
 }

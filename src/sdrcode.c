@@ -167,20 +167,25 @@ static short *gencode_L1CA(int prn, int *len, double *crate)
         !(code=(short *)malloc(sizeof(short)*LEN_L1CA))) {
         return NULL;
     }
-    for (i=0;i<10;i++) R1[i]=R2[i]=-1;
-    for (i=0;i<LEN_L1CA;i++) {
+    for (i=0;i<10;i++) 
+		R1[i]=R2[i]=-1;
+
+    for (i=0;i<LEN_L1CA;i++) 
+	{
         G1[i]=R1[9];
         G2[i]=R2[9];
         C1=R1[2]*R1[9];
         C2=R2[1]*R2[2]*R2[5]*R2[7]*R2[8]*R2[9];
-        for (j=9;j>0;j--) {
+        for (j=9;j>0;j--) 
+		{
             R1[j]=R1[j-1];
             R2[j]=R2[j-1];
         }
         R1[0]=C1;
         R2[0]=C2;
     }
-    for (i=0,j=LEN_L1CA-delay[prn-1];i<LEN_L1CA;i++,j++) {
+    for (i=0, j=LEN_L1CA-delay[prn-1]; i<LEN_L1CA; i++,j++) 
+	{
         code[i]=-G1[i]*G2[j%LEN_L1CA];
     }
     *len=LEN_L1CA;

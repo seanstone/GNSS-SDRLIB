@@ -34,6 +34,8 @@ extern "C" {
 #define RTLSDR_FREQUENCY        1575420000
 #define RTLSDR_ASYNC_BUF_NUMBER 32
 #define RTLSDR_DATABUFF_SIZE    16384
+
+#define RTLSDR_FILE_READ_RATIO	2
 extern int rtlsdr_init(void);
 extern void rtlsdr_quit(void);
 extern int rtlsdr_initconf(void);
@@ -41,6 +43,7 @@ extern int rtlsdr_start(void);
 extern void rtlsdr_exp(uint8_t *buf, int n, char *expbuf);
 extern void rtlsdr_getbuff(uint64_t buffloc, int n, char *expbuf);
 extern void frtlsdr_pushtomembuf(void);
+extern void rtlsdr_set_rx_buf(uint32_t buf_size);
 /*----------------------------------------------------------------------------*/
 
 typedef struct rtlsdr_dev rtlsdr_dev_t;

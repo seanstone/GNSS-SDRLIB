@@ -44,7 +44,6 @@
 #pragma comment(lib,"fec/libfec.a")
 #pragma comment(lib,"fft/libfftw3f-3.lib")
 #pragma comment(lib,"usb/libusb.lib")
-#pragma comment(lib,"stereo/libnslstereo.a")
 #pragma comment(lib,"bladerf/bladeRF.lib")
 #pragma comment(lib,"rtlsdr/rtlsdr.lib")
 
@@ -52,7 +51,6 @@
 #include "fft/fftw3.h"
 #include "rtklib/rtklib.h"
 #include "usb/lusb0_usb.h"
-#include "stereo/stereo.h"
 #include "gn3s/gn3s.h"
 #include "bladerf/libbladeRF.h"
 #include "rtlsdr/rtl-sdr.h"
@@ -88,9 +86,6 @@ using namespace gnsssdrgui;
 #include "fftw3.h"
 #include "rtklib.h"
 #include "libusb-1.0/libusb.h"
-#ifdef STEREO
-#include "stereo.h"
-#endif
 #ifdef GN3S
 #include "gn3s.h"
 #endif
@@ -143,6 +138,7 @@ extern "C" {
                                        /* number of temporary buffer */
 #else
 #define MEMBUFFLEN    5000             /* number of temporary buffer */
+//#define MEMBUFFLEN    160             /* number of temporary buffer */
 #endif
 
 #define FILE_BUFFSIZE 65536            /* buffer size for post processing */
@@ -153,9 +149,10 @@ extern "C" {
 #define ACQINTG_G1    10               /* number of non-coherent integration */
 #define ACQINTG_E1B   4                /* number of non-coherent integration */
 #define ACQINTG_B1I   10               /* number of non-coherent integration */
-#define ACQINTG_SBAS  10               /* number of non-coherent integration */
+//#define ACQINTG_SBAS  10               /* number of non-coherent integration */
+#define ACQINTG_SBAS  4               /* number of non-coherent integration */
 #define ACQHBAND      7000             /* half width for doppler search (Hz) */
-#define ACQSTEP       200              /* doppler search frequency step (Hz) */
+#define ACQSTEP       100              /* doppler search frequency step (Hz) */
 #define ACQTH         3.0              /* acquisition threshold (peak ratio) */
 #define ACQSLEEP      2000             /* acquisition process interval (ms) */
 
@@ -252,6 +249,7 @@ extern "C" {
 #define PLT_XY        2                /* plotting type: 2D data */
 #define PLT_SURFZ     3                /* plotting type: 3D surface data */
 #define PLT_BOX       4                /* plotting type: BOX */
+#define PLT_XY_LINES  5                /* plotting type: 2D data lines */
 #define PLT_WN        5                /* number of figure window column */
 #define PLT_HN        4                /* number of figure window row */
 #define PLT_W         200              /* window width (pixel) */
@@ -265,8 +263,8 @@ extern "C" {
 #define SPEC_MS       200              /* plotting interval (ms) */
 #define SPEC_LEN      7                /* number of integration of 1 ms data */
 #define SPEC_BITN     8                /* number of bin for histogram */
-#define SPEC_NLOOP    100              /* number of loop for smoothing */
-#define SPEC_NFFT     16384            /* number of FFT points */
+#define SPEC_NLOOP    400              /* number of loop for smoothing */
+#define SPEC_NFFT     4096            /* number of FFT points */
 #define SPEC_PLT_W    400              /* window width (pixel) */
 #define SPEC_PLT_H    500              /* window height (pixel) */
 #define SPEC_PLT_MW   100              /* margin (pixel) */
@@ -358,7 +356,7 @@ typedef struct {
     int sbasport;        /* SBAS/L1-SAIF TCP/IP port */
     int trkcorrn;        /* number of correlation points */
     int trkcorrd;        /* interval of correlation points (sample) */
-    int trkcorrp;        /* correlation points (sample) */
+    int trkcorrp;        /* half of correlation points - used for real tracking*/
     double trkdllb[2];   /* dll noise bandwidth (Hz) */
     double trkpllb[2];   /* pll noise bandwidth (Hz) */
     double trkfllb[2];   /* fll noise bandwidth (Hz) */
@@ -374,7 +372,7 @@ typedef struct {
     unsigned char *buff; /* IF data buffer */
     unsigned char *buff2;/* IF data buffer (for file input) */
     unsigned char *tmpbuff; /* USB temporary buffer (for STEREO_V26) */
-    uint64_t buffcnt;    /* current buffer location */
+    uint64_t buffcnt;    /* current buffer location, incremented when one "packet" is received from radio or read from file */
 } sdrstat_t;
 
 /* sdr observation struct */
@@ -394,7 +392,7 @@ typedef struct {
     int intg;            /* number of integration */
     double hband;        /* half band of search frequency (Hz) */
     double step;         /* frequency search step (Hz) */
-    int nfreq;           /* number of search frequency */
+    int nfreq;           /* number of frequencyes to search, static */
     double *freq;        /* search frequency (Hz) */
     int acqcodei;        /* acquired code phase */
     int freqi;           /* acquired frequency index */
@@ -418,16 +416,16 @@ typedef struct {
 
 /* sdr tracking struct */
 typedef struct {
-    double codefreq;     /* code frequency (Hz) */
+    double codefreq;     /* code frequency (Hz), variable. Initialized with "crate" value*/
     double carrfreq;     /* carrier frequency (Hz) */
     double remcode;      /* remained code phase (chip) */
     double remcarr;      /* remained carrier phase (rad) */
     double oldremcode;   /* previous remained code phase (chip) */
     double oldremcarr;   /* previous remained carrier phase (chip) */
-    double codeNco;      /* code NCO */
+    double codeNco;      /* code NCO, Hz */
     double codeErr;      /* code tracking error */
-    double carrNco;      /* carrier NCO */
-    double carrErr;      /* carrier tracking error */
+    double carrNco;      /* carrier NCO, Hz */
+    double carrPhaseErr;      /* carrier tracking error */
     double freqErr;      /* frequencyr error in FLL */
     uint64_t buffloc;    /* current buffer location */
     double tow[OBSINTERPN]; /* time of week (s) */
@@ -438,11 +436,11 @@ typedef struct {
     double L[OBSINTERPN];/* carrier phase (cycle) */
     double D[OBSINTERPN];/* doppler frequency (Hz) */
     double S[OBSINTERPN];/* signal to noise ratio (dB-Hz) */
-    double *II;          /* correlation (in-phase) */
-    double *QQ;          /* correlation (quadrature-phase) */
+    double *II;          /* correlation (in-phase) results array */
+    double *QQ;          /* correlation (quadrature-phase) results array*/
     double *oldI;        /* previous correlation (I-phase) */
     double *oldQ;        /* previous correlation (Q-phase) */
-    double *sumI;        /* integrated correlation (I-phase) */
+    double *sumI;        /* integrated correlation (I-phase) - array, one of usages - tracking plotting*/
     double *sumQ;        /* integrated correlation (Q-phase) */
     double *oldsumI;     /* previous integrated correlation (I-phase) */
     double *oldsumQ;     /* previous integrated correlation (Q-phase) */
@@ -452,9 +450,9 @@ typedef struct {
     int flagpolarityadd; /* polarity (half cycle ambiguity) add flag */
     int flagremcarradd;  /* remained carrier phase add flag */
     int flagloopfilter;  /* loop filter update flag */
-    int corrn;           /* number of correlation points */
-    int *corrp;          /* correlation points (sample) */
-    double *corrx;       /* correlation points (for plotting) */
+    int corrn;           /* number of correlation points. Set in GUI */
+    int *corrp;          /* correlation points (sample). Length this array is "corrn". Contains positive numbers. Static.*/
+    double *corrx;       /* correlation points (for plotting) - array. Static */
     int ne,nl;           /* early/late correlation point */
     sdrtrkprm_t prm1;    /* tracking parameter struct */
     sdrtrkprm_t prm2;    /* tracking parameter struct */
@@ -548,15 +546,15 @@ typedef struct {
     double f_sf;         /* sampling rate (Hz) */
     double f_if;         /* intermediate frequency (Hz) */
     double foffset;      /* frequency offset (Hz) */
-    short *code;         /* original code */
-    cpx_t *xcode;        /* resampled code in frequency domain */
-    int clen;            /* code length */
-    double crate;        /* code chip rate (Hz) */
+    short *code;         /* original PRN code data, length - sizeof(short) * "clen" */
+    cpx_t *xcode;        /* resampled PRN code in frequency domain */
+    int clen;            /* code length - number of chips in one period of PRN code. Static*/
+    double crate;        /* code chip rate [chip/s or Hz]. Static*/
     double ctime;        /* code period (s) */
     double ti;           /* sampling interval (s) */
     double ci;           /* chip interval (s) */
     int nsamp;           /* number of samples in one code (doppler=0Hz) */
-    int currnsamp;       /* current number of samples in one code */
+    int currnsamp;       /* current number of samples in one PRN code. Variable, but close to  nsamp*/
     int nsampchip;       /* number of samples in one code chip (doppler=0Hz) */
     sdracq_t acq;        /* acquisition struct */
     sdrtrk_t trk;        /* tracking struct */
@@ -741,7 +739,7 @@ extern void pcorrelator(const char *data, int dtype, double ti, int n,
                         double *freq, int nfreq, double crate, int m, 
                         cpx_t* codex, double *P);
 extern void correlator(const char *data, int dtype, double ti, int n, 
-                       double freq, double phi0, double crate, double coff, 
+                       double carr_freq, double phi0, double crate, double coff,
                        int* s, int ns, double *II, double *QQ, double *remc, 
                        double *remp, short* codein, int coden);
 

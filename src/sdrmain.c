@@ -110,6 +110,8 @@ extern void startsdr(void) /* call as function */
     int i;
     SDRPRINTF("GNSS-SDRLIB start!\n");
 
+	setlocale(LC_ALL, "en-US");
+
     /* check initial value */
     if (chk_initvalue(&sdrini)<0) {
         SDRPRINTF("error: chk_initvalue\n");
@@ -222,7 +224,7 @@ extern void quitsdr(sdrini_t *ini, int stop)
     if (stop==4) return;
 }
 /* sdr channel thread ----------------------------------------------------------
-* sdr channel thread for signal acquisition and tracking  
+* sdr channel thread for signal acquisition and tracking . Every sat have its own thread
 * args   : void   *arg      I   sdr channel struct
 * return : none
 * note : This thread handles the acquisition and tracking of one of the signals. 
@@ -236,7 +238,9 @@ extern void *sdrthread(void *arg)
 {
     sdrch_t *sdr=(sdrch_t*)arg;
     sdrplt_t pltacq={0},plttrk={0};
-    uint64_t buffloc=0,bufflocnow=0,cnt=0,loopcnt=0;
+	/* Time is ms? */ 
+	uint64_t cnt = 0;
+    uint64_t buffloc=0,bufflocnow=0,loopcnt=0;
     double *acqpower=NULL;
     FILE* fp=NULL;
     char fname[100];
@@ -254,40 +258,48 @@ extern void *sdrthread(void *arg)
     if (initpltstruct(&pltacq,&plttrk,sdr)<0) {
         sdrstat.stopflag=ON;
     }
-    sleepms(sdr->no*500);
+    //sleepms(sdr->no*500);
     SDRPRINTF("**** %s sdr thread %d start! ****\n",sdr->satstr,sdr->no);
 
-    while (!sdrstat.stopflag) {
+    while (!sdrstat.stopflag) 
+	{
         /* acquisition */
-        if (!sdr->flagacq) {
+        if (!sdr->flagacq) //if set, never reset
+		{
             /* memory allocation */
             if (acqpower!=NULL) free(acqpower);
             acqpower=(double*)calloc(sizeof(double),sdr->nsamp*sdr->acq.nfreq);
 
-            /* fft correlation */
+            /* fft correlation. One of results is moving buffer position (buffloc)*/
             buffloc=sdraccuisition(sdr,acqpower);
 
             /* plot aquisition result */
-            if (sdr->flagacq&&sdrini.pltacq) {
+            if (sdr->flagacq&&sdrini.pltacq) 
+			{
                 pltacq.z=acqpower;
-                plot(&pltacq); 
+                plot(&pltacq); //plot aquisition
             }
         }
         /* tracking */
-        if (sdr->flagacq) {
-            bufflocnow=sdrtracking(sdr,buffloc,cnt);
-            if (sdr->flagtrk) {
-                
+        if (sdr->flagacq) 
+		{
+            bufflocnow=sdrtracking(sdr,buffloc,cnt); //correlator + sdrnavigation there
+            if (sdr->flagtrk) //this flag is set periodicaly, after completed corellation
+			{
                 /* correlation output accumulation */
                 cumsumcorr(&sdr->trk,sdr->nav.ocode[sdr->nav.ocodei]);
 
                 sdr->trk.flagloopfilter=0;
-                if (!sdr->nav.flagsync) {
+                if (!sdr->nav.flagsync)
+				{
+					//Using Parameters1
                     pll(sdr,&sdr->trk.prm1,sdr->ctime); /* PLL */
                     dll(sdr,&sdr->trk.prm1,sdr->ctime); /* DLL */
                     sdr->trk.flagloopfilter=1;
                 }
-                else if (sdr->nav.swloop) {
+                else if (sdr->nav.swloop) 
+				{
+					//Using Parameters2
                     pll(sdr,&sdr->trk.prm2,(double)sdr->trk.loopms/1000);
                     dll(sdr,&sdr->trk.prm2,(double)sdr->trk.loopms/1000);
                     sdr->trk.flagloopfilter=2;
@@ -304,11 +316,12 @@ extern void *sdrthread(void *arg)
 
                     /* plot correator output */
                     if (loopcnt%((int)(plttrk.pltms/sdr->trk.loopms))==0&&
-                        sdrini.plttrk&&loopcnt>0) {
+                        sdrini.plttrk&&loopcnt>0) 
+					{
                         plttrk.x=sdr->trk.corrx;
-                        memcpy(plttrk.y,sdr->trk.sumI,
-                            sizeof(double)*(sdr->trk.corrn*2+1));
-                        plotthread(&plttrk);
+                        memcpy(plttrk.y,sdr->trk.sumI, sizeof(double)*(sdr->trk.corrn*2+1));
+						//draw ABS values with a scale!
+                        plotthread(&plttrk); //plot tracking
                     }
                     
                     /* LEX thread */
@@ -318,19 +331,24 @@ extern void *sdrthread(void *arg)
                     loopcnt++;
                 }
 
-                if (sdr->no==1&&cnt%(1000*10)==0)
-                    SDRPRINTF("process %d sec...\n",(int)cnt/(1000));
+                if (sdr->no==1 && (cnt%(1000*10)==0)) //10s when cnt is in ms
+                    SDRPRINTF("Tracking process %d sec...\n",(int)cnt/(1000));
 
                 /* write tracking log */
-                if (sdrini.log) writelog(fp,&sdr->trk,&sdr->nav);
+				if (sdrini.log)
+				{
+					writelog(fp, &sdr->trk, &sdr->nav);
+					//SDRPRINTF("LOG write\n");
+				}
 
-                if (sdr->trk.flagloopfilter) clearcumsumcorr(&sdr->trk);
+                if (sdr->trk.flagloopfilter) 
+					clearcumsumcorr(&sdr->trk);
                 cnt++;
                 buffloc+=sdr->currnsamp;
             }
         }
         sdr->trk.buffloc=buffloc;
-    }
+    }//end of while
     
     if (sdrini.nchL6!=0&&sdr->no==sdrini.nch+1) 
         setevent(hlexeve);
@@ -338,13 +356,20 @@ extern void *sdrthread(void *arg)
     /* plot termination */
     quitpltstruct(&pltacq,&plttrk);
 
-    /* cloase tracking log file */
-    if (sdrini.log) closelog(fp);
+    /* close tracking log file */
+	if (sdrini.log)
+	{
+		SDRPRINTF("LOG closed\n");
+		closelog(fp);
+	}
 
-    if (sdr->flagacq) {
+    if (sdr->flagacq) 
+	{
         SDRPRINTF("SDR channel %s thread finished! Delay=%d [ms]\n",
             sdr->satstr,(int)(bufflocnow-buffloc)/sdr->nsamp);
-    } else {
+    } 
+	else
+	{
         SDRPRINTF("SDR channel %s thread finished!\n",sdr->satstr);
     }
 

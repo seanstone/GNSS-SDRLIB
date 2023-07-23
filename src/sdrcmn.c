@@ -196,7 +196,7 @@ extern void cpxcpx(const short *II, const short *QQ, double scale, int n,
 
     for (i=0;i<n;i++,p+=2) {
         p[0]=   II[i]*(float)scale;
-        p[1]=QQ?QQ[i]*(float)scale:0.0f;
+        p[1]=QQ?QQ[i]*(float)scale:0.0f; //QQ can be NULL
     }
 }
 /* convert float vector to complex vector --------------------------------------
@@ -488,11 +488,12 @@ extern void dot_22(const short *a1, const short *a2, const short *b1,
 #else
     d1[0]=d1[1]=d2[0]=d2[1]=0.0;
 
-    for (;p1<a1+n;p1++,p2++,q1++,q2++) {
-        d1[0]+=(*p1)*(*q1);
-        d1[1]+=(*p1)*(*q2);
-        d2[0]+=(*p2)*(*q1);
-        d2[1]+=(*p2)*(*q2);
+    for (;p1<a1+n; p1++,p2++,q1++,q2++) 
+	{
+        d1[0]+=(*p1)*(*q1);//I0
+        d1[1]+=(*p1)*(*q2);//I1
+        d2[0]+=(*p2)*(*q1);//Q0
+        d2[1]+=(*p2)*(*q2);//Q1
     }
 #endif
 }
@@ -572,6 +573,7 @@ extern void dot_23(const short *a1, const short *a2, const short *b1,
         d1[0]+=(*p1)*(*q1);
         d1[1]+=(*p1)*(*q2);
         d1[2]+=(*p1)*(*q3);
+
         d2[0]+=(*p2)*(*q1);
         d2[1]+=(*p2)*(*q2);
         d2[2]+=(*p2)*(*q3);
@@ -858,8 +860,8 @@ extern void shiftdata(void *dst, void *src, size_t size, int n)
 }
 /* resample code ---------------------------------------------------------------
 * resample code
-* args   : char   *code     I   code
-*          int    len       I   code length (len < 2^(31-FPBIT))
+* args   : char   *code     I   original code
+*          int    len       I   original code length (len < 2^(31-FPBIT))
 *          double coff      I   initial code offset (chip)
 *          int    smax      I   maximum correlator space (sample) 
 *          double ci        I   code sampling interval (chip)
@@ -871,6 +873,7 @@ extern double rescode(const short *code, int len, double coff, int smax,
                       double ci, int n, short *rcode)
 {
     short *p;
+	//coff is used as a position in a original PRN buffer
 
 #if !defined(SSE2_ENABLE)
     coff-=smax*ci;
@@ -948,7 +951,7 @@ extern double mixcarr(const char *data, int dtype, double ti, int n,
         }
     }
     phi=phi0*CDIV/DPI;
-    ps=freq*CDIV*ti; /* phase step */
+    ps= freq *CDIV*ti; /* phase step */
 
     if (dtype==DTYPEIQ) { /* complex */
         for (p=data;p<data+n*2;p+=2,II++,QQ++,phi+=ps) {
@@ -1051,27 +1054,41 @@ extern double mixcarr(const char *data, int dtype, double ti, int n,
 * multiply sampling data and carrier (I/Q), multiply code (E/P/L), and integrate
 * args   : char   *data     I   sampling data vector (n x 1 or 2n x 1)
 *          int    dtype     I   sampling data type (1:real,2:complex)
-*          double ti        I   sampling interval (s)
-*          int    n         I   number of samples
-*          double freq      I   carrier frequency (Hz)
+*          double ti        I   ADC sampling interval (s)
+*          int    n         I   number of ADC samples in PRN code - variable
+*		   int    ns        I   number of corellation points
+*          double carr_freq  I   local carrier frequency (Hz)
 *          double phi0      I   carrier initial phase (rad)
 *          double crate     I   code chip rate (chip/s)
 *          double coff      I   code chip offset (chip)
-*          int    s         I   correlator points (sample)
+*          int    *sample   I   correlator points (sample)
 *          short  *I,*Q     O   correlation power I,Q
 *                                 I={I_P,I_E1,I_L1,I_E2,I_L2,...,I_Em,I_Lm}
 *                                 Q={Q_P,Q_E1,Q_L1,Q_E2,Q_L2,...,Q_Em,Q_Lm}
+*			short* codein   I   original PRN data
+*			coden           I   number of chips in PRN code period, 1023 for GPS
 * return : none
 * notes  : see above for data
 *-----------------------------------------------------------------------------*/
 extern void correlator(const char *data, int dtype, double ti, int n, 
-                       double freq, double phi0, double crate, double coff, 
-                       int* s, int ns, double *II, double *QQ, double *remc, 
+                       double carr_freq, double phi0, double crate, double coff, 
+                       int* sample, int ns, double *II, double *QQ, double *remc, 
                        double *remp, short* codein, int coden)
 {
-    short *dataI=NULL,*dataQ=NULL,*code_e=NULL,*code;
+	// ADC Samples mixed with carrier
+    short *dataI=NULL,*dataQ=NULL;
+
+	/*Shifted pointer to the array with resampled original PRN */
+	short *code_ptr;
+
+	/* resampled "codein" data (from original PRN data) */
+	short *code_e = NULL;
     int i;
-    int smax=s[ns-1];
+	/* Number of maximum corr. point [maximum correlator space].*/
+    int smax = sample[ns-1];
+
+	if (n < 0)
+		return;
 
     /* 8 is treatment of remainder in SSE2 */
     if (!(dataI=(short *)sdrmalloc(sizeof(short)*(n+64)))|| 
@@ -1080,24 +1097,35 @@ extern void correlator(const char *data, int dtype, double ti, int n,
             SDRPRINTF("error: correlator memory allocation\n");
             return;
     }
-    code=code_e+smax;
+	code_ptr = code_e + smax;
 
-    /* mix local carrier */
-    *remp=mixcarr(data,dtype,ti,n,freq,phi0,dataI,dataQ);
+    /* mix local carrier - process n points of the data*/
+    *remp = mixcarr(data, dtype, ti, n, carr_freq, phi0, dataI, dataQ);
 
-    /* resampling code */
-    *remc=rescode(codein,coden,coff,smax,ti*crate,n,code_e);
+	//ci= ti*crate; 1/ci is a number of ADC samples in one chip
+    /* resampling original PRN code */
+    *remc = rescode(codein, coden, coff, smax, ti*crate, n, code_e);
 
     /* multiply code and integrate */
-    dot_23(dataI,dataQ,code,code-s[0],code+s[0],n,II,QQ);
-    for (i=1;i<ns;i++) {
-        dot_22(dataI,dataQ,code-s[i],code+s[i],n,II+1+i*2,QQ+1+i*2);
+	//code_ptr = code_e + sample[ns-1];
+	//we send -- code_e + sample[ns-1] - sample[0];
+	//Calculate I[0], I[1], I[2] and Q[0], Q[1], Q[2] - zero (at code_ptr) and left/right
+    dot_23(dataI, dataQ, code_ptr, code_ptr - sample[0], code_ptr + sample[0], n, II, QQ);
+
+    for (i=1; i < ns; i++) 
+	{
+        dot_22(dataI, dataQ, code_ptr - sample[i], code_ptr + sample[i], n, II+1+i*2, QQ+1+i*2);
     }
-    for (i=0;i<1+2*ns;i++) {
+
+	//Final normalize
+    for (i=0;i<1+2*ns;i++)
+	{
         II[i]*=CSCALE;
         QQ[i]*=CSCALE;
     }
-    sdrfree(dataI); sdrfree(dataQ); sdrfree(code_e);
+    sdrfree(dataI); 
+	sdrfree(dataQ); 
+	sdrfree(code_e);
     dataI=dataQ=code_e=NULL;
 }
 /* parallel correlator ---------------------------------------------------------
@@ -1110,7 +1138,7 @@ extern void correlator(const char *data, int dtype, double ti, int n,
 *          int    nfreq     I   number of frequencies
 *          double crate     I   code chip rate (chip/s)
 *          int    m         I   number of resampling data
-*          cpx_t  codex     I   frequency domain code
+*          cpx_t  codex     I   PRN data in a frequency domain
 *          double *P        O   normalized correlation power vector
 * return : none
 * notes  : P=abs(ifft(conj(fft(code)).*fft(data.*e^(2*pi*freq*t*i)))).^2
@@ -1120,14 +1148,14 @@ extern void pcorrelator(const char *data, int dtype, double ti, int n,
                         cpx_t* codex, double *P)
 {
     int i;
-    cpx_t *datax;
+    cpx_t *dataCpx;//complex data
     short *dataI,*dataQ;
-    char *dataR;
+    char *dataR;//source
 
     if (!(dataR=(char  *)sdrmalloc(sizeof(char )*m*dtype))||
         !(dataI=(short *)sdrmalloc(sizeof(short)*(m+64)))||
         !(dataQ=(short *)sdrmalloc(sizeof(short)*(m+64)))||
-        !(datax=cpxmalloc(m))) {
+        !(dataCpx=cpxmalloc(m))) {
             SDRPRINTF("error: pcorrelator memory allocation\n");
             return;
     }
@@ -1136,18 +1164,20 @@ extern void pcorrelator(const char *data, int dtype, double ti, int n,
     memset(dataR,0,m*dtype); /* zero paddinng */
     memcpy(dataR,data,2*n*dtype); /* for zero padding FFT */
 
-    for (i=0;i<nfreq;i++) {
+	//Check all frequencies from -ACQHBAND to +ACQHBAND
+    for (i=0;i<nfreq;i++) 
+	{
         /* mix local carrier */
         mixcarr(dataR,dtype,ti,m,freq[i],0.0,dataI,dataQ);
 
-        /* to complex */
-        cpxcpx(dataI,dataQ,CSCALE/m,m,datax);
+        /* to a complex type from i/q arrays*/
+        cpxcpx(dataI,dataQ,CSCALE/m,m,dataCpx);
 
         /* convolution */
-        cpxconv(NULL,NULL,datax,codex,m,n,1,&P[i*n]);
+        cpxconv(NULL,NULL,dataCpx,codex,m,n,1,&P[i*n]);
     }
     sdrfree(dataR);
     sdrfree(dataI);
     sdrfree(dataQ);
-    cpxfree(datax);
+    cpxfree(dataCpx);
 }

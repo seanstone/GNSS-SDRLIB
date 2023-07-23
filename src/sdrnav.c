@@ -18,11 +18,13 @@ extern void sdrnavigation(sdrch_t *sdr, uint64_t buffloc, uint64_t cnt)
 
     sdr->nav.biti=cnt%sdr->nav.rate; /* current bit location for bit sync */
     sdr->nav.ocodei=(sdr->nav.biti-sdr->nav.synci-1); /* overlay code index */
-    if (sdr->nav.ocodei<0) sdr->nav.ocodei+=sdr->nav.rate;
+    if (sdr->nav.ocodei<0) 
+		sdr->nav.ocodei+=sdr->nav.rate;
 
     /* navigation bit synchronization */
     /* if synchronization does not need (NH20 case) */
-    if (sdr->nav.rate==1&&cnt>2000/(sdr->ctime*1000)) {
+    if (sdr->nav.rate==1 && (cnt > 2000 / (sdr->ctime * 1000))) 
+	{
         sdr->nav.synci=0;
         sdr->nav.flagsync=ON;
     }
@@ -30,9 +32,11 @@ extern void sdrnavigation(sdrch_t *sdr, uint64_t buffloc, uint64_t cnt)
     if (!sdr->nav.flagsync&&cnt>2000/(sdr->ctime*1000))
         sdr->nav.flagsync=checksync(sdr->trk.II[0],sdr->trk.oldI[0],&sdr->nav);
     
-    if (sdr->nav.flagsync) {
+    if (sdr->nav.flagsync) 
+	{
         /* navigation bit determination */
-        if (checkbit(sdr->trk.II[0],sdr->trk.loopms,&sdr->nav)==OFF) {
+        if (checkbit(sdr->trk.II[0],sdr->trk.loopms,&sdr->nav)==OFF) 
+		{
             //SDRPRINTF("%s nav sync error!!\n",sdr->satstr);
         }
 
@@ -61,7 +65,7 @@ extern void sdrnavigation(sdrch_t *sdr, uint64_t buffloc, uint64_t cnt)
                 predecodefec(&sdr->nav); /* FEC decoding */
                 sfn=decodenav(&sdr->nav); /* navigation message decoding */
                 
-                SDRPRINTF("%s ID=%d tow:%.1f week=%d cnt=%d\n",
+                SDRPRINTF("%s ID=%d tow:%.1f week=%d int_loop_cnt=%d\n",
                     sdr->satstr,sfn,sdr->nav.sdreph.tow_gpst,
                     sdr->nav.sdreph.week_gpst,(int)cnt);
 
@@ -258,7 +262,8 @@ extern int checkbit(double IP, int loopms, sdrnav_t *nav)
     }
 
     /* genetaing loop filter timing */
-    if (nav->cnt%loopms==0) nav->swloop=ON;
+    if (nav->cnt%loopms==0) 
+		nav->swloop=ON;
     else nav->swloop=OFF;
 
     /* if synchronization is finished */

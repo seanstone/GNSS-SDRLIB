@@ -273,11 +273,27 @@ extern void plotxy(FILE *fp, double *x, double *y, int n, int skip, double s)
     int i;
     fprintf(fp, "set grid\n");
     fprintf(fp, "unset key\n");
-    fprintf(fp, "plot '-' with p pt 6 ps %d\n",PSIZE);
-    for(i=0;i<n;i+=(skip+1))
-        fprintf(fp,"%.3f\t%.3f\n",x[i],y[i]*s);
+    fprintf(fp, "plot '-' with p pt 7 ps %d\n",PSIZE);
+	for (i = 0;i < n; i += (skip + 1))
+	{
+		fprintf(fp, "%.3f\t%.3f\n", x[i], y[i] * s);
+	}
     fprintf(fp,"e\n"); 
     fflush(fp);
+}
+
+extern void plotxy_lines(FILE *fp, double *x, double *y, int n, int skip, double s)
+{
+	int i;
+	fprintf(fp, "set grid\n");
+	fprintf(fp, "unset key\n");
+	fprintf(fp, "plot '-' with lines\n");
+	for (i = 0;i < n; i += (skip + 1))
+	{
+		fprintf(fp, "%.3f\t%.3f\n", x[i], y[i] * s);
+	}
+	fprintf(fp, "e\n");
+	fflush(fp);
 }
 /* plot surface function -------------------------------------------------------
 * gnuplot plot 3D surface data function
@@ -352,9 +368,14 @@ static void *plotgnuplot(void *arg)
         break;
     case PLT_XY: /* 2D plot*/
         if (plt->flagabs)
-            for (i=0;i<plt->nx;i++) plt->y[i]=fabs(plt->y[i]);
+            for (i=0;i<plt->nx;i++) plt->y[i]=fabs(plt->y[i]);//ABS!!!
         plotxy(plt->fp,plt->x,plt->y,plt->nx,plt->skip,plt->scale);
         break;
+	case PLT_XY_LINES: /* 2D plot*/
+		if (plt->flagabs)
+			for (i = 0;i < plt->nx;i++) plt->y[i] = fabs(plt->y[i]);
+		plotxy_lines(plt->fp, plt->x, plt->y, plt->nx, plt->skip, plt->scale);
+		break;
     case PLT_SURFZ: /* 3D surface plot */
         if (plt->flagabs)
             for (i=0;i<plt->nx*plt->ny;i++) plt->z[i]=fabs(plt->z[i]);

@@ -1,5 +1,7 @@
 #include "../../src/sdr.h"
 using namespace gnsssdrgui;
+using namespace System::Globalization;
+
 
 /* set sdr initialize struct function */
 void setsdrini(bool bsat, int sat, int sys, int ftype, bool L1, bool sbas, bool lex, sdrini_t *ini);
@@ -123,6 +125,8 @@ System::Void SDR::start(System::Object^ obj)
     setsdrini(form->chk_E12->Checked,12,SYS_GAL,form->rb_E_FE2->Checked,form->chk_TYPE_E1B->Checked,false,false,&sdrini);
     setsdrini(form->chk_E19->Checked,19,SYS_GAL,form->rb_E_FE2->Checked,form->chk_TYPE_E1B->Checked,false,false,&sdrini);
     setsdrini(form->chk_E20->Checked,20,SYS_GAL,form->rb_E_FE2->Checked,form->chk_TYPE_E1B->Checked,false,false,&sdrini);
+	setsdrini(form->chk_E22->Checked,22,SYS_GAL,form->rb_E_FE2->Checked,form->chk_TYPE_E1B->Checked, false, false, &sdrini);
+	setsdrini(form->chk_E25->Checked, 25, SYS_GAL, form->rb_E_FE2->Checked, form->chk_TYPE_E1B->Checked, false, false, &sdrini);
 
     /* channel setting */ /* BeiDou */
     setsdrini(form->chk_C01->Checked, 1,SYS_CMP,form->rb_C_FE2->Checked,form->chk_TYPE_B1I->Checked,false,false,&sdrini);
@@ -286,7 +290,11 @@ System::Void SDR::startspectrum(System::Object^ obj)
     if (form->rb_spec1->Checked) {
         sdrspec.dtype=(int)form->rb_f1IQ->Checked+1;
         sdrspec.ftype=1;
-        sdrspec.f_sf=Convert::ToDouble(form->tb_f1sf->Text)*1e6;
+
+		System::String ^text = form->tb_f1sf->Text;
+
+		text = text->Replace(',', '.');
+        sdrspec.f_sf=Convert::ToDouble(text, CultureInfo::InvariantCulture)*1e6;
         sdrspec.nsamp=(int)(sdrspec.f_sf/1000);
     }
     if (form->rb_spec2->Checked) {

@@ -343,7 +343,7 @@ extern int initpltstruct(sdrplt_t *acq, sdrplt_t *trk, sdrch_t *sdr)
             PLT_H,PLT_W,PLT_MH,PLT_MW,sdr->no);
         if (initsdrplot(acq)<0) return -1;
         settitle(acq,sdr->satstr);
-        setlabel(acq,"Frequency (Hz)","Code Offset (sample)");
+        setlabel(acq,"Frequency (number)","Code Offset (sample)");
     }
     /* tracking */
     if (sdrini.plttrk) {
@@ -461,8 +461,10 @@ extern int inittrkstruct(int sat, int ctype, double ctime, sdrtrk_t *trk)
     /* correlation point */
     trk->corrn=sdrini.trkcorrn;
     trk->corrp=(int *)malloc(sizeof(int)*trk->corrn);
-    for (i=0;i<trk->corrn;i++) {
-        trk->corrp[i]=sdrini.trkcorrd*(i+1);
+    for (i=0;i<trk->corrn;i++) 
+	{
+        trk->corrp[i] = sdrini.trkcorrd*(i+1);//fill corrp[i]
+
         if (trk->corrp[i]==sdrini.trkcorrp){
             trk->ne=2*(i+1)-1; /* Early */
             trk->nl=2*(i+1);   /* Late */
@@ -654,17 +656,20 @@ extern int initnavstruct(int sys, int ctype, int prn, sdrnav_t *nav)
 *          int    dtype     I   data type (DTYPEI or DTYPEIQ)
 *          int    ftype     I   front end type (FTYPE1 or FTYPE2)
 *          double f_cf      I   center (carrier) frequency (Hz)
-*          double f_sf      I   sampling frequency (Hz)
+*          double sampling_rate_hz      I   sampling frequency (Hz)
 *          double f_if      I   intermidiate frequency (Hz)
 *          sdrch_t *sdr     I/0 sdr channel struct
 * return : int                  0:okay -1:error
 *-----------------------------------------------------------------------------*/
 extern int initsdrch(int chno, int sys, int prn, int ctype, int dtype,
-                     int ftype, double f_cf, double f_sf, double f_if,
+                     int ftype, double f_cf, double sampling_rate_hz, double f_if,
                      sdrch_t *sdr)
 {
     int i;
     short *rcode;
+
+	//f_if = f_cf - (sampling_rate_hz * 41.0);
+	SDRPRINTF("IF: %f\n", f_if);
 
     sdr->no=chno;
     sdr->sys=sys;
@@ -673,28 +678,34 @@ extern int initsdrch(int chno, int sys, int prn, int ctype, int dtype,
     sdr->ctype=ctype;
     sdr->dtype=dtype;
     sdr->ftype=ftype;
-    sdr->f_sf=f_sf;
+    sdr->f_sf=sampling_rate_hz;
     sdr->f_if=f_if;
-    sdr->ti=1/f_sf;
+    sdr->ti=1/sampling_rate_hz;
     
     /* code generation */
-    if (!(sdr->code=gencode(prn,ctype,&sdr->clen,&sdr->crate))) {
+    if (!(sdr->code = gencode(prn,ctype,&sdr->clen,&sdr->crate))) {//clen, crate are filled here
         SDRPRINTF("error: gencode\n"); return -1;
     }
-    sdr->ci=sdr->ti*sdr->crate;
+    sdr->ci=sdr->ti*sdr->crate; // 1/ci is a number of ADC samples in one chip
     sdr->ctime=sdr->clen/sdr->crate;
-    sdr->nsamp=(int)(f_sf*sdr->ctime);
+    sdr->nsamp=(int)(sampling_rate_hz * sdr->ctime);
     sdr->nsampchip=(int)(sdr->nsamp/sdr->clen);
     satno2id(sdr->sat,sdr->satstr);
 
     /* set carrier frequency */
-    if (ctype==CTYPE_G1) {
+    if (ctype==CTYPE_G1) 
+	{
         sprintf(sdr->satstr,"R%d",prn); /* frequency number instead of PRN */
         sdr->f_cf=FREQ1_GLO+DFRQ1_GLO*prn; /* FDMA */
         sdr->foffset=DFRQ1_GLO*prn; /* FDMA */
-    } else if (sdrini.fend==FEND_FRTLSDR) {
+    } 
+	else if (sdrini.fend==FEND_FRTLSDR) 
+	{
         sdr->foffset=f_cf*sdrini.rtlsdrppmerr*1e-6;
-    } else {
+		sdr->f_cf = f_cf; /* carrier frequency */
+    } 
+	else 
+	{
         sdr->f_cf=f_cf; /* carrier frequency */
         sdr->foffset=0.0; /* frequency offset */
     }
@@ -729,10 +740,12 @@ extern int initsdrch(int chno, int sys, int prn, int ctype, int dtype,
             SDRPRINTF("error: initsdrch memory alocation\n"); return -1;
     }
     /* other code generation */
-    for (i=0;i<sdr->acq.nfft;i++) rcode[i]=0; /* zero padding */
+    for (i=0;i<sdr->acq.nfft;i++) 
+		rcode[i]=0; /* zero padding */
     rescode(sdr->code,sdr->clen,0,0,sdr->ci,sdr->nsamp,rcode); /* resampling */
-    cpxcpx(rcode,NULL,1.0,sdr->acq.nfft,sdr->xcode); /* FFT for acquisition */
-    cpxfft(NULL,sdr->xcode,sdr->acq.nfft);
+
+    cpxcpx(rcode,NULL,1.0,sdr->acq.nfft,sdr->xcode); //to complex
+    cpxfft(NULL,sdr->xcode,sdr->acq.nfft);/* FFT for acquisition */
 
     sdrfree(rcode);
     return 0;

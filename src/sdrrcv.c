@@ -10,6 +10,7 @@
 * args   : sdrini_t *ini    I   sdr initialization struct
 * return : int                  status 0:okay -1:failure
 *-----------------------------------------------------------------------------*/
+
 extern int rcvinit(sdrini_t *ini)
 {
 #ifdef WIN32
@@ -24,20 +25,21 @@ extern int rcvinit(sdrini_t *ini)
 
     switch (ini->fend) {
 #ifdef STEREO
-    /* NSL STEREO */
-    case FEND_STEREO: 
-        if (stereo_init()<0) return -1; /* stereo initialization */
-        
-        /* frontend buffer size */
-        sdrstat.fendbuffsize=STEREO_DATABUFF_SIZE; /* frontend buff size */
-        sdrstat.buffsize=STEREO_DATABUFF_SIZE*MEMBUFFLEN; /* total */
 
-        /* memory allocation */
-        sdrstat.buff=(uint8_t*)malloc(sdrstat.buffsize);
-        if (NULL==sdrstat.buff) {
-            SDRPRINTF("error: failed to allocate memory for the buffer\n");
-            return -1;
-        }
+    //// NSL STEREO 
+    //case FEND_STEREO: 
+    //    if (stereo_init()<0) return -1; /* stereo initialization */
+    //    
+    //    /* frontend buffer size */
+    //    sdrstat.fendbuffsize=STEREO_DATABUFF_SIZE; /* frontend buff size */
+    //    sdrstat.buffsize=STEREO_DATABUFF_SIZE*MEMBUFFLEN; /* total */
+
+    //    /* memory allocation */
+    //    sdrstat.buff=(uint8_t*)malloc(sdrstat.buffsize);
+    //    if (NULL==sdrstat.buff) {
+    //        SDRPRINTF("error: failed to allocate memory for the buffer\n");
+    //        return -1;
+    //    }
 
 #ifdef STEREOV26
         /* memory allocation */
@@ -52,29 +54,29 @@ extern int rcvinit(sdrini_t *ini)
             return -1;
         }
 #else
-        if (STEREO_GrabInit()<0) {
-            SDRPRINTF("error: STEREO_GrabInit\n");
-            return -1;
-        }
+        //if (STEREO_GrabInit()<0) {
+        //    SDRPRINTF("error: STEREO_GrabInit\n");
+        //    return -1;
+        //}
 #endif /* STEREOV26 */
         break;
     /* STEREO Binary File */
-    case FEND_FSTEREO: 
-        /* IF file open */
-        if ((ini->fp1 = fopen(ini->file1,"rb"))==NULL){
-            SDRPRINTF("error: failed to open file : %s\n",ini->file1);
-            return -1;
-        }
-        sdrstat.fendbuffsize=STEREO_DATABUFF_SIZE; /* frontend buff size */
-        sdrstat.buffsize=STEREO_DATABUFF_SIZE*MEMBUFFLEN; /* total */
+    //case FEND_FSTEREO: 
+    //    /* IF file open */
+    //    if ((ini->fp1 = fopen(ini->file1,"rb"))==NULL){
+    //        SDRPRINTF("error: failed to open file : %s\n",ini->file1);
+    //        return -1;
+    //    }
+    //    sdrstat.fendbuffsize=STEREO_DATABUFF_SIZE; /* frontend buff size */
+    //    sdrstat.buffsize=STEREO_DATABUFF_SIZE*MEMBUFFLEN; /* total */
 
-        /* memory allocation */
-        sdrstat.buff=(uint8_t*)malloc(sdrstat.buffsize);
-        if (NULL==sdrstat.buff) {
-            SDRPRINTF("error: failed to allocate memory for the buffer\n");
-            return -1;
-        }
-        break;
+    //    /* memory allocation */
+    //    sdrstat.buff=(uint8_t*)malloc(sdrstat.buffsize);
+    //    if (NULL==sdrstat.buff) {
+    //        SDRPRINTF("error: failed to allocate memory for the buffer\n");
+    //        return -1;
+    //    }
+    //    break;
 #endif
 #ifdef GN3S
     /* SiGe GN3S v2/v3 */
@@ -82,12 +84,20 @@ extern int rcvinit(sdrini_t *ini)
     case FEND_GN3SV3: 
         if (gn3s_init()<0) return -1; /* GN3S initialization */
 
-        if (ini->fend==FEND_GN3SV2)
-            sdrstat.fendbuffsize=GN3S_BUFFSIZE/2; /* frontend buff size */
-        if (ini->fend==FEND_GN3SV3)
-            sdrstat.fendbuffsize=GN3S_BUFFSIZE; /* frontend buff size */
-
-        sdrstat.buffsize=GN3S_BUFFSIZE*MEMBUFFLEN; /* total */
+		if (ini->fend == FEND_GN3SV2)
+		{
+			sdrstat.fendbuffsize = GN3S_BUFFSIZE / 2; /* frontend buff size */
+			sdrstat.fendbuffsize = sdrstat.fendbuffsize * GN3S_FILE_READ_RATIO;//increase to make more realtime
+			fgn3s_set_rx_buf(sdrstat.fendbuffsize);
+			sdrstat.buffsize = sdrstat.fendbuffsize * 2 * MEMBUFFLEN; /* total */
+		}
+		if (ini->fend == FEND_GN3SV3)
+		{
+			sdrstat.fendbuffsize = GN3S_BUFFSIZE; /* frontend buff size */
+			sdrstat.fendbuffsize = sdrstat.fendbuffsize * GN3S_FILE_READ_RATIO;//increase to make more realtime
+			fgn3s_set_rx_buf(sdrstat.fendbuffsize);
+			sdrstat.buffsize = sdrstat.fendbuffsize*MEMBUFFLEN; /* total */
+		}
 
         /* memory allocation */
         sdrstat.buff=(uint8_t*)malloc(sdrstat.buffsize);
@@ -105,12 +115,20 @@ extern int rcvinit(sdrini_t *ini)
             return -1;
         }
         
-        if (ini->fend==FEND_GN3SV2)
-            sdrstat.fendbuffsize=GN3S_BUFFSIZE/2; /* frontend buff size */
-        if (ini->fend==FEND_GN3SV3)
-            sdrstat.fendbuffsize=GN3S_BUFFSIZE; /* frontend buff size */
-
-        sdrstat.buffsize=GN3S_BUFFSIZE*MEMBUFFLEN; /* total */
+		if (ini->fend == FEND_FGN3SV2)
+		{
+			sdrstat.fendbuffsize = GN3S_BUFFSIZE / 2; /* frontend buff size */
+			sdrstat.fendbuffsize = sdrstat.fendbuffsize * GN3S_FILE_READ_RATIO;//increase to make more realtime
+			fgn3s_set_rx_buf(sdrstat.fendbuffsize);
+			sdrstat.buffsize = sdrstat.fendbuffsize * 2 * MEMBUFFLEN; /* total */
+		}
+		if (ini->fend == FEND_FGN3SV3)
+		{
+			sdrstat.fendbuffsize = GN3S_BUFFSIZE; /* frontend buff size */
+			sdrstat.fendbuffsize = sdrstat.fendbuffsize * GN3S_FILE_READ_RATIO;//increase to make more realtime
+			fgn3s_set_rx_buf(sdrstat.fendbuffsize);
+			sdrstat.buffsize = sdrstat.fendbuffsize*MEMBUFFLEN; /* total */
+		}
 
         /* memory allocation */
         sdrstat.buff=(uint8_t*)malloc(sdrstat.buffsize);
@@ -118,6 +136,7 @@ extern int rcvinit(sdrini_t *ini)
             SDRPRINTF("error: failed to allocate memory for the buffer\n");
             return -1;
         }
+		SDRPRINTF("Data is taken from file, reading is not real-time\n");
         break;
 #endif
 #ifdef BLADERF
@@ -152,6 +171,7 @@ extern int rcvinit(sdrini_t *ini)
             SDRPRINTF("error: failed to allocate memory for the buffer\n");
             return -1;
         }
+		SDRPRINTF("Data is taken from file, reading is not real-time\n");
         break;
 #endif
 #ifdef RTLSDR
@@ -161,7 +181,8 @@ extern int rcvinit(sdrini_t *ini)
 
         /* frontend buffer size */
         sdrstat.fendbuffsize=RTLSDR_DATABUFF_SIZE; /* frontend buff size */
-        sdrstat.buffsize=2*RTLSDR_DATABUFF_SIZE*MEMBUFFLEN; /* total */
+		rtlsdr_set_rx_buf(sdrstat.fendbuffsize);
+        sdrstat.buffsize=RTLSDR_DATABUFF_SIZE*MEMBUFFLEN; /* total */
 
         /* memory allocation */
         sdrstat.buff=(uint8_t*)malloc(sdrstat.buffsize);
@@ -179,15 +200,18 @@ extern int rcvinit(sdrini_t *ini)
         }
 
         /* frontend buffer size */
-        sdrstat.fendbuffsize=RTLSDR_DATABUFF_SIZE; /* frontend buff size */
-        sdrstat.buffsize=2*RTLSDR_DATABUFF_SIZE*MEMBUFFLEN; /* total */
-
+        sdrstat.fendbuffsize=RTLSDR_DATABUFF_SIZE * RTLSDR_FILE_READ_RATIO; /* frontend buff size */
+		rtlsdr_set_rx_buf(sdrstat.fendbuffsize);
+        sdrstat.buffsize= 2 * sdrstat.fendbuffsize * MEMBUFFLEN; /* total */
+		
         /* memory allocation */
         sdrstat.buff=(uint8_t*)malloc(sdrstat.buffsize);
-        if (NULL==sdrstat.buff) {
+        if (NULL==sdrstat.buff)
+		{
             SDRPRINTF("error: failed to allocate memory for the buffer\n");
-            return -1;
+			return -1;
         }
+		SDRPRINTF("Data is taken from file, reading is not real-time\n");
         break;
 #endif
     /* File */
@@ -223,6 +247,7 @@ extern int rcvinit(sdrini_t *ini)
                 return -1;
             }
         }
+		SDRPRINTF("Data is taken from file, reading is not real-time\n");
         break;
     default:
         return -1;
@@ -240,7 +265,7 @@ extern int rcvquit(sdrini_t *ini)
 #ifdef STEREO
     /* NSL stereo */
     case FEND_STEREO: 
-        stereo_quit();
+//        stereo_quit();
         break;
 #endif
 #ifdef GN3S
@@ -296,10 +321,10 @@ extern int rcvgrabstart(sdrini_t *ini)
     /* NSL stereo */
     case FEND_STEREO: 
 #ifndef STEREOV26
-        if (STEREO_GrabStart()<0) {
-            SDRPRINTF("error: STEREO_GrabStart\n");
-            return -1;
-        }
+        //if (STEREO_GrabStart()<0) {
+        //    SDRPRINTF("error: STEREO_GrabStart\n");
+        //    return -1;
+        //}
 #endif
 #endif
     default:
@@ -327,16 +352,16 @@ extern int rcvgrabdata(sdrini_t *ini)
             return -1;
         }
 #else
-        if (STEREO_RefillDataBuffer()<0) {
-            SDRPRINTF("error: STEREO Buffer overrun...\n");
-            return -1;
-        }
+        //if (STEREO_RefillDataBuffer()<0) {
+        //    SDRPRINTF("error: STEREO Buffer overrun...\n");
+        //    return -1;
+        //}
 #endif
-        stereo_pushtomembuf(); /* copy to membuffer */
+        //stereo_pushtomembuf(); /* copy to membuffer */
         break;
     /* STEREO Binary File */
     case FEND_FSTEREO: 
-        fstereo_pushtomembuf(); /* copy to membuffer */
+       // fstereo_pushtomembuf(); /* copy to membuffer */
         sleepms(5);
         break;
 #endif
@@ -406,15 +431,18 @@ extern int rcvgrabdata(sdrini_t *ini)
 extern int rcvgetbuff(sdrini_t *ini, uint64_t buffloc, int n, int ftype,
                       int dtype, char *expbuf)
 {
+	if (n < 0)
+		return -1;
+
     switch (ini->fend) {
 #ifdef STEREO
     /* NSL STEREO */
     case FEND_STEREO: 
-        stereo_getbuff(buffloc,n,dtype,expbuf);
+       // stereo_getbuff(buffloc,n,dtype,expbuf);
         break;
     /* STEREO Binary File */
     case FEND_FSTEREO: 
-        stereo_getbuff(buffloc,n,dtype,expbuf);
+       // stereo_getbuff(buffloc,n,dtype,expbuf);
         break;
 #endif
 #ifdef GN3S

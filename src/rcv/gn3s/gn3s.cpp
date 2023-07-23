@@ -11,6 +11,8 @@
 using namespace std;
 Fx2_dev fx2_d;
 
+uint32_t fgn3s_read_buf_size = 0;
+
 /* GN3S initialization ---------------------------------------------------------
 * search front end and initialization
 * args   : none
@@ -118,10 +120,10 @@ extern void gn3s_exp_v2(unsigned char *buf, int n, char *expbuf)
 *-----------------------------------------------------------------------------*/
 extern void gn3s_getbuff_v2(uint64_t buffloc, int n, int dtype, char *expbuf)
 {
-    uint64_t membuffloc=2*buffloc%(MEMBUFFLEN*GN3S_BUFFSIZE);
+    uint64_t membuffloc=2*buffloc%(MEMBUFFLEN*fgn3s_read_buf_size);
     int nout;
     n=2*n;
-    nout=(int)((membuffloc+n)-(MEMBUFFLEN*GN3S_BUFFSIZE));
+    nout=(int)((membuffloc+n)-(MEMBUFFLEN*fgn3s_read_buf_size));
 
     mlock(hbuffmtx);
     if (nout>0) {
@@ -185,8 +187,8 @@ extern void gn3s_exp_v3(unsigned char *buf, int n, int i_mode, char *expbuf)
 *-----------------------------------------------------------------------------*/
 extern void gn3s_getbuff_v3(uint64_t buffloc, int n, int dtype, char *expbuf)
 {
-    uint64_t membuffloc=buffloc%(MEMBUFFLEN*GN3S_BUFFSIZE);
-    int nout=(int)((membuffloc+n)-(MEMBUFFLEN*GN3S_BUFFSIZE));
+    uint64_t membuffloc=buffloc%(MEMBUFFLEN*fgn3s_read_buf_size);
+    int nout=(int)((membuffloc+n)-(MEMBUFFLEN*fgn3s_read_buf_size));
 
     mlock(hbuffmtx);
     if (nout>0) {
@@ -213,10 +215,10 @@ extern int gn3s_pushtomembuf(void)
 
     mlock(hbuffmtx);
     nbuff=fx2_d.read_IF(
-        &sdrstat.buff[(sdrstat.buffcnt%MEMBUFFLEN)*GN3S_BUFFSIZE]);
+		&sdrstat.buff[(sdrstat.buffcnt%MEMBUFFLEN)*fgn3s_read_buf_size]);
     unmlock(hbuffmtx);
 
-    if (nbuff!=GN3S_BUFFSIZE) {
+    if (nbuff!= fgn3s_read_buf_size) {
         SDRPRINTF("GN3S read IF error...\n");
     }
 
@@ -238,12 +240,12 @@ extern void fgn3s_pushtomembuf(void)
 
     mlock(hbuffmtx);
 
-    nread=fread(&sdrstat.buff[(sdrstat.buffcnt%MEMBUFFLEN)*GN3S_BUFFSIZE],
-        1,GN3S_BUFFSIZE,sdrini.fp1);
+    nread=fread(&sdrstat.buff[(sdrstat.buffcnt%MEMBUFFLEN)*fgn3s_read_buf_size],
+        1, fgn3s_read_buf_size,sdrini.fp1);
 
     unmlock(hbuffmtx);
 
-    if (nread<GN3S_BUFFSIZE) {
+    if (nread< fgn3s_read_buf_size) {
         sdrstat.stopflag=ON;
         SDRPRINTF("end of file!\n");
     }
@@ -262,11 +264,11 @@ extern void fgn3s_pushtomembuf(void)
 *-----------------------------------------------------------------------------*/
 extern void fgn3s_getbuff(uint64_t buffloc, int n, int dtype, char *expbuf)
 {
-    uint64_t membuffloc=dtype*buffloc%(MEMBUFFLEN*dtype*GN3S_BUFFSIZE);
+    uint64_t membuffloc=dtype*buffloc%(MEMBUFFLEN*dtype*fgn3s_read_buf_size);
     int nout;
 
     n=dtype*n;
-    nout=(int)((membuffloc+n)-(MEMBUFFLEN*dtype*GN3S_BUFFSIZE));
+    nout=(int)((membuffloc+n)-(MEMBUFFLEN*dtype*fgn3s_read_buf_size));
 
     mlock(hbuffmtx);
     if (nout>0) {
@@ -276,4 +278,9 @@ extern void fgn3s_getbuff(uint64_t buffloc, int n, int dtype, char *expbuf)
         memcpy(expbuf,&sdrstat.buff[membuffloc],n);
     }
     unmlock(hbuffmtx);
+}
+
+extern void fgn3s_set_rx_buf(uint32_t buf_size)
+{
+	fgn3s_read_buf_size = buf_size;
 }

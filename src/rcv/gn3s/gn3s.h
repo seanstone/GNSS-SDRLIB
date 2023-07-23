@@ -17,6 +17,8 @@
 #define GN3S_DECIMATE      1      /* decimate mode */
 #define GN3S_PACK          1      /* pack mode */
 #define GN3S_BUFFSIZE      32*512 /* buffer size: 16 kB */
+#define GN3S_FILE_READ_RATIO	16
+
 
 /* global functions */
 extern int  gn3s_init(void);
@@ -28,3 +30,4 @@ extern void gn3s_getbuff_v3(uint64_t buffloc, int n, int dtype, char *expbuf);
 extern int  gn3s_pushtomembuf(void);
 extern void fgn3s_pushtomembuf(void);
 extern void fgn3s_getbuff(uint64_t buffloc, int n, int dtype, char *expbuf);
+extern void fgn3s_set_rx_buf(uint32_t buf_size);

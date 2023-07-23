@@ -82,12 +82,12 @@ extern void *specthread(void * arg)
         if (spec->dtype==DTYPEI||spec->dtype==DTYPEIQ) {
             spec->histI.x=xI;
             spec->histI.y=yI;
-            plot(&spec->histI);
+            plot(&spec->histI); //plot spectrum histogram 
         }
         if (spec->dtype==DTYPEIQ) {
             spec->histQ.x=xQ;
             spec->histQ.y=yQ;
-            plot(&spec->histQ);
+            plot(&spec->histQ); //plot spectrum histogram 
         }
 
         /* spectrum analyzationr */
@@ -98,7 +98,7 @@ extern void *specthread(void * arg)
         /* power spectrum plot */
         spec->pspec.x=freq;
         spec->pspec.y=pspec;
-        plot(&spec->pspec);
+        plot(&spec->pspec); //plot spectrum power 
     }
     /* free plot structs */
     quitspecpltstruct(spec);
@@ -136,9 +136,10 @@ extern int initspecpltstruct(sdrspec_t *spec)
     else n=2;
 
     /* power spectrum analysis */
-    setsdrplotprm(&spec->pspec,PLT_XY,SPEC_NFFT*spec->dtype,0,20,OFF,1,
+    setsdrplotprm(&spec->pspec,PLT_XY_LINES,SPEC_NFFT*spec->dtype,0,10,OFF,1,
         SPEC_PLT_H,SPEC_PLT_W,SPEC_PLT_MH,SPEC_PLT_MW,n);
-    if (initsdrplot(&spec->pspec)<0) return -1;
+    if (initsdrplot(&spec->pspec)<0) 
+		return -1;
     settitle(&spec->pspec,"Power Spectrum Analysis");
     setlabel(&spec->pspec,"Frequency (MHz)","Power Spectrum (dB)");
     setyrange(&spec->pspec,-40,0);

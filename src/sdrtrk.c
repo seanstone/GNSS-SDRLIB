@@ -20,30 +20,44 @@ extern uint64_t sdrtracking(sdrch_t *sdr, uint64_t buffloc, uint64_t cnt)
     sdr->flagtrk=OFF;
 
     /* memory allocation */
-    data=(char*)sdrmalloc(sizeof(char)*(sdr->nsamp+100)*sdr->dtype);
+    data=(char*)sdrmalloc(sizeof(char)*(sdr->nsamp+1000)*sdr->dtype);
 
     /* current buffer location */
     mlock(hreadmtx);
-    bufflocnow=sdrstat.fendbuffsize*sdrstat.buffcnt-sdr->nsamp; 
+
+	int fendbuffsize = sdrstat.fendbuffsize;
+	uint64_t buffcnt = sdrstat.buffcnt;
+
+    bufflocnow = fendbuffsize * buffcnt  - sdr->nsamp;
     unmlock(hreadmtx);
 
-    if (bufflocnow>buffloc) {
+    if (bufflocnow > buffloc) 
+	{
+		//Value currnsamp is close to nsamp, but differ becase of frequency offset
         sdr->currnsamp=(int)((sdr->clen-sdr->trk.remcode)/
-            (sdr->trk.codefreq/sdr->f_sf));
+            (sdr->trk.codefreq / sdr->f_sf));
+		if (sdr->currnsamp < 0)
+		{
+			SDRPRINTF("Tracking: Currsample < 0\n");
+		}
         rcvgetbuff(&sdrini,buffloc,sdr->currnsamp,sdr->ftype,sdr->dtype,data);
 
+		///Copy II/QQ to oldI/oldQ before calculating new  II/QQ
         memcpy(sdr->trk.oldI,sdr->trk.II,1+2*sdr->trk.corrn*sizeof(double));
         memcpy(sdr->trk.oldQ,sdr->trk.QQ,1+2*sdr->trk.corrn*sizeof(double));
+
         sdr->trk.oldremcode=sdr->trk.remcode;
         sdr->trk.oldremcarr=sdr->trk.remcarr;
-        /* correlation */
+        /* correlation - calculate II and QQ values for "corrn" points*/
         correlator(data,sdr->dtype,sdr->ti,sdr->currnsamp,sdr->trk.carrfreq,
             sdr->trk.oldremcarr,sdr->trk.codefreq, sdr->trk.oldremcode,
-            sdr->trk.corrp,sdr->trk.corrn,sdr->trk.QQ,sdr->trk.II,
+            sdr->trk.corrp, //sample arr.
+			sdr->trk.corrn,
+			sdr->trk.QQ,sdr->trk.II,
             &sdr->trk.remcode,&sdr->trk.remcarr,sdr->code,sdr->clen);
 
-        /* navigation data */
-        sdrnavigation(sdr,buffloc,cnt);
+        /* navigation data. sdr->trk.II[0] is used there */
+        sdrnavigation(sdr,buffloc,cnt); //todo - move to main
 
         sdr->flagtrk=ON;
     } else {
@@ -56,9 +70,7 @@ extern uint64_t sdrtracking(sdrch_t *sdr, uint64_t buffloc, uint64_t cnt)
 * phase/frequency lock loop (2nd order PLL with 1st order FLL)
 * carrier frequency is computed
 * args   : sdrtrk_t trk     I/0 sdr tracking struct
-*          int    polarity  I   polarity caused by secondary code
-*          int    flag1     I   reset flag 1
-*          int    flag2     I   reset flag 2
+*          int    polarity  I   polarity caused by secondary code (+1/-1 value)
 * return : none
 *-----------------------------------------------------------------------------*/
 extern void cumsumcorr(sdrtrk_t *trk, int polarity)
@@ -93,16 +105,18 @@ extern void clearcumsumcorr(sdrtrk_t *trk)
 *-----------------------------------------------------------------------------*/
 extern void pll(sdrch_t *sdr, sdrtrkprm_t *prm, double dt)
 {
-    double carrErr,freqErr;
-    double IP=sdr->trk.sumI[0],QP=sdr->trk.sumQ[0];
+	/* Value in radians*/
+    double carrPhaseErr,freqErr;
+	double IP = sdr->trk.sumI[0];
+	double QP = sdr->trk.sumQ[0];
     double oldIP=sdr->trk.oldsumI[0],oldQP=sdr->trk.oldsumQ[0];
     double f1,f2;
 
     /* PLL discriminator */
-    if (IP>0)
-        carrErr=atan2(QP,IP)/PI;
+    if (IP > 0)
+        carrPhaseErr = atan2(QP,IP)/PI;
     else
-        carrErr=atan2(-QP,-IP)/PI;
+        carrPhaseErr = atan2(-QP,-IP)/PI;
 
     /* FLL discriminator */
     f1=(IP==0)?    PI/2:atan(QP/IP);
@@ -116,12 +130,12 @@ extern void pll(sdrch_t *sdr, sdrtrkprm_t *prm, double dt)
     //freqErr/=DPI;
 
     /* 2nd order PLL with 1st order FLL */
-    sdr->trk.carrNco+=prm->pllaw*(carrErr-sdr->trk.carrErr)+
-        prm->pllw2*dt*carrErr+prm->fllw*dt*freqErr;
+    sdr->trk.carrNco += prm->pllaw * (carrPhaseErr - sdr->trk.carrPhaseErr) +
+        (prm->pllw2 * dt * carrPhaseErr) + (prm->fllw * dt * freqErr);
 
     sdr->trk.carrfreq=sdr->acq.acqfreq+sdr->trk.carrNco;
-    sdr->trk.carrErr=carrErr;
-    sdr->trk.freqErr=freqErr;
+    sdr->trk.carrPhaseErr=carrPhaseErr;
+    sdr->trk.freqErr=freqErr;//only for logging
 }
 /* delay lock loop -------------------------------------------------------------
 * delay lock loop (2nd order DLL)
@@ -144,8 +158,8 @@ extern void dll(sdrch_t *sdr, sdrtrkprm_t *prm, double dt)
         prm->dllw2*dt*codeErr;
 
     /* carrier aiding */
-    sdr->trk.codefreq=sdr->crate-sdr->trk.codeNco+
-        (sdr->trk.carrfreq-sdr->f_if-sdr->foffset)/(sdr->f_cf/sdr->crate);
+    sdr->trk.codefreq = sdr->crate - sdr->trk.codeNco +
+        (sdr->trk.carrfreq-sdr->f_if-sdr->foffset) / (sdr->f_cf/sdr->crate);
     sdr->trk.codeErr=codeErr;
 }
 /* set observation data --------------------------------------------------------
