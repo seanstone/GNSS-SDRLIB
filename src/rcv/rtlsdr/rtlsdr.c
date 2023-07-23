@@ -167,7 +167,7 @@ extern void rtlsdr_getbuff(uint64_t buffloc, int n, char *expbuf)
     unmlock(hbuffmtx);
 }
 /* push data to memory buffer --------------------------------------------------
-* push data to memory buffer from STEREO binary IF file
+* push data to memory buffer from binary IF file
 * args   : none
 * return : none
 *-----------------------------------------------------------------------------*/

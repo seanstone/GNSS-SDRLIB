@@ -179,6 +179,9 @@
     <ClInclude Include="..\..\lib\rtklib\rtklib.h">
       <Filter>sdr\lib\rtklib</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\frontends.h">
+      <Filter>sdr</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="maindlg.resX">

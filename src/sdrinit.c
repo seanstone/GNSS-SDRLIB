@@ -123,19 +123,17 @@ extern int readinifile(sdrini_t *ini)
         return -1;
     }
     readinistr(fendfile,"FEND","TYPE",str);
-    if (strcmp(str,"STEREO")==0)     ini->fend=FEND_STEREO;
-    else if (strcmp(str,"GN3SV2")==0)     ini->fend=FEND_GN3SV2;
+    if (strcmp(str,"GN3SV2")==0)     ini->fend=FEND_GN3SV2;
     else if (strcmp(str,"GN3SV3")==0)     ini->fend=FEND_GN3SV3;
     else if (strcmp(str,"BLADERF")==0)     ini->fend=FEND_BLADERF;
     else if (strcmp(str,"RTLSDR")==0)     ini->fend=FEND_RTLSDR;
-    else if (strcmp(str,"FILESTEREO")==0) ini->fend=FEND_FSTEREO;
     else if (strcmp(str,"FILEGN3SV2")==0) ini->fend=FEND_FGN3SV2;
     else if (strcmp(str,"FILEGN3SV3")==0) ini->fend=FEND_FGN3SV3;
     else if (strcmp(str,"FILEBLADERF")==0) ini->fend=FEND_FBLADERF;
     else if (strcmp(str,"FILERTLSDR")==0) ini->fend=FEND_FRTLSDR;
     else if (strcmp(str,"FILE")==0)       ini->fend=FEND_FILE;
     else { SDRPRINTF("error: wrong frontend type: %s\n",str); return -1; }
-    if (ini->fend==FEND_FILE    ||ini->fend==FEND_FSTEREO||
+    if (ini->fend==FEND_FILE    ||
         ini->fend==FEND_FGN3SV2 ||ini->fend==FEND_FGN3SV3||
         ini->fend==FEND_FBLADERF||ini->fend==FEND_FRTLSDR) {
         readinistr(fendfile,"FEND","FILE1",ini->file1);
@@ -234,7 +232,7 @@ extern int chk_initvalue(sdrini_t *ini)
     }
 
     /* checking frequency input */
-    if(ini->useif2||ini->fend==FEND_STEREO) {
+    if(ini->useif2) {
         if ((ini->f_sf[1]<=0||ini->f_sf[1]>100e6) ||
             (ini->f_if[1]<0 ||ini->f_if[1]>100e6)) {
                 SDRPRINTF("error: wrong freq. input sf2: %.0f if2: %.0f\n",
@@ -252,7 +250,7 @@ extern int chk_initvalue(sdrini_t *ini)
     }
 
     /* checking filepath */
-    if (ini->fend==FEND_FILE   ||ini->fend==FEND_FSTEREO||
+    if (ini->fend==FEND_FILE   ||
         ini->fend==FEND_FGN3SV2||ini->fend==FEND_FGN3SV2||
         ini->fend==FEND_FRTLSDR||ini->fend==FEND_FBLADERF) {
         if (ini->useif1&&((ret=GetFileAttributes(ini->file1))<0)){
@@ -369,7 +367,7 @@ extern int initpltstruct(sdrplt_t *acq, sdrplt_t *trk, sdrch_t *sdr)
         setyrange(trk,0,sdr->trk.loop*sdr->nsamp/4000*scale);
     }
 
-    if (sdrini.fend==FEND_FILE||sdrini.fend==FEND_FSTEREO||
+    if (sdrini.fend==FEND_FILE ||
         sdrini.fend==FEND_FGN3SV2||sdrini.fend==FEND_FGN3SV2||
         sdrini.fend==FEND_FRTLSDR||sdrini.fend==FEND_FBLADERF) {
         trk->pltms=PLT_MS_FILE;

@@ -17,6 +17,7 @@
 #include <time.h>
 #include <stdarg.h>
 #include <ctype.h>
+#include "frontends.h"
 
 /* SIMD (SSE2_ENABLE) */
 #if defined(SSE2_ENABLE)
@@ -115,31 +116,16 @@ extern "C" {
 #define OFF           0                /* flag OFF */
 #define MAXBITS       3000             /* maximum bit length */
 
-/* front end setting */
-#define FEND_STEREO   0                /* front end type: NSL STEREO */
-#define FEND_GN3SV2   1                /* front end type: SiGe GN3S v2 */
-#define FEND_GN3SV3   2                /* front end type: SiGe GN3S v3 */
-#define FEND_RTLSDR   3                /* front end type: RTL-SDR */
-#define FEND_BLADERF  4                /* front end type: Nuand BladeRF */
-#define FEND_FSTEREO  5                /* front end type: STEREO binary file */
-#define FEND_FGN3SV2  6                /* front end type: GN3Sv2 binary file */
-#define FEND_FGN3SV3  7                /* front end type: GN3Sv3 binary file */
-#define FEND_FRTLSDR  8                /* front end type: RTL-SDR binary file */
-#define FEND_FBLADERF 9                /* front end type: BladeRF binary file */
-#define FEND_FILE     10               /* front end type: IF file */
+
+
 #define FTYPE1        1                /* front end number */
 #define FTYPE2        2                /* front end number */
 #define DTYPEI        1                /* sampling type: real */
 #define DTYPEIQ       2                /* sampling type: real+imag */
 
-#ifdef STEREOV26
-#define STEREO_DATABUFF_SIZE STEREO_PKT_SIZE
-#define MEMBUFFLEN    (STEREO_NUM_BLKS*32)
-                                       /* number of temporary buffer */
-#else
+
 #define MEMBUFFLEN    5000             /* number of temporary buffer */
 //#define MEMBUFFLEN    160             /* number of temporary buffer */
-#endif
 
 #define FILE_BUFFSIZE 65536            /* buffer size for post processing */
 
@@ -371,7 +357,6 @@ typedef struct {
     int fendbuffsize;    /* front end data buffer size */
     unsigned char *buff; /* IF data buffer */
     unsigned char *buff2;/* IF data buffer (for file input) */
-    unsigned char *tmpbuff; /* USB temporary buffer (for STEREO_V26) */
     uint64_t buffcnt;    /* current buffer location, incremented when one "packet" is received from radio or read from file */
 } sdrstat_t;
 
@@ -810,7 +795,6 @@ extern void closelog(FILE *fp);
 /* sdrrcv.c ------------------------------------------------------------------*/
 extern int rcvinit(sdrini_t *ini);
 extern int rcvquit(sdrini_t *ini);
-extern int rcvgrabstart(sdrini_t *ini);
 extern int rcvgrabdata(sdrini_t *ini);
 extern int rcvgetbuff(sdrini_t *ini, uint64_t buffloc, int n, int ftype, 
                       int dtype, char *expbuf);

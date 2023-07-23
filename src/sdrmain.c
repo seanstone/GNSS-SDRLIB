@@ -173,11 +173,6 @@ extern void startsdr(void) /* call as function */
     }
 #endif
 
-    /* start grabber */
-    if (rcvgrabstart(&sdrini)<0) {
-        quitsdr(&sdrini,4);
-        return;
-    }
 
     /* data grabber loop */
     while (!sdrstat.stopflag) {

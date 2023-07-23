@@ -34,7 +34,7 @@ System::Void SDR::start(System::Object^ obj)
     memcpy(sdrini.file1,str,strlen(str));
     str=(char*)(void*)Marshal::StringToHGlobalAnsi(form->tb_input2->Text);
     memcpy(sdrini.file2,str,strlen(str));
-    sdrini.fend=form->cmb_input->SelectedIndex;
+    sdrini.fend=form->cmb_input->SelectedIndex + 1;
     sdrini.f_sf[0]=str2double(form->tb_f1sf->Text,split)*1e6;
     sdrini.f_sf[1]=str2double(form->tb_f2sf->Text,split)*1e6;
     sdrini.f_if[0]=str2double(form->tb_f1if->Text,split)*1e6;

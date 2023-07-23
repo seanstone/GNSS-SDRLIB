@@ -107,7 +107,7 @@ namespace gnsssdrgui {
 			this->groupBox1->Controls->Add(this->tb_corrd);
 			this->groupBox1->Controls->Add(this->label1);
 			this->groupBox1->Controls->Add(this->tb_corrn);
-			this->groupBox1->Font = (gcnew System::Drawing::Font(L"MS UI Gothic", 9, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+			this->groupBox1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(128)));
 			this->groupBox1->Location = System::Drawing::Point(9, 10);
 			this->groupBox1->Name = L"groupBox1";
@@ -119,7 +119,7 @@ namespace gnsssdrgui {
 			// label5
 			// 
 			this->label5->AutoSize = true;
-			this->label5->Font = (gcnew System::Drawing::Font(L"MS UI Gothic", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->label5->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(128)));
 			this->label5->Location = System::Drawing::Point(216, 65);
 			this->label5->Name = L"label5";
@@ -130,7 +130,7 @@ namespace gnsssdrgui {
 			// label3
 			// 
 			this->label3->AutoSize = true;
-			this->label3->Font = (gcnew System::Drawing::Font(L"MS UI Gothic", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->label3->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(128)));
 			this->label3->Location = System::Drawing::Point(4, 65);
 			this->label3->Name = L"label3";
@@ -140,7 +140,7 @@ namespace gnsssdrgui {
 			// 
 			// tb_corrp
 			// 
-			this->tb_corrp->Font = (gcnew System::Drawing::Font(L"MS UI Gothic", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->tb_corrp->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(128)));
 			this->tb_corrp->Location = System::Drawing::Point(170, 62);
 			this->tb_corrp->Name = L"tb_corrp";
@@ -151,7 +151,7 @@ namespace gnsssdrgui {
 			// label2
 			// 
 			this->label2->AutoSize = true;
-			this->label2->Font = (gcnew System::Drawing::Font(L"MS UI Gothic", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->label2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(128)));
 			this->label2->Location = System::Drawing::Point(4, 42);
 			this->label2->Name = L"label2";
@@ -161,7 +161,7 @@ namespace gnsssdrgui {
 			// 
 			// tb_corrd
 			// 
-			this->tb_corrd->Font = (gcnew System::Drawing::Font(L"MS UI Gothic", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->tb_corrd->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(128)));
 			this->tb_corrd->Location = System::Drawing::Point(170, 39);
 			this->tb_corrd->Name = L"tb_corrd";
@@ -172,7 +172,7 @@ namespace gnsssdrgui {
 			// label1
 			// 
 			this->label1->AutoSize = true;
-			this->label1->Font = (gcnew System::Drawing::Font(L"MS UI Gothic", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->label1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(128)));
 			this->label1->Location = System::Drawing::Point(4, 20);
 			this->label1->Name = L"label1";
@@ -182,7 +182,7 @@ namespace gnsssdrgui {
 			// 
 			// tb_corrn
 			// 
-			this->tb_corrn->Font = (gcnew System::Drawing::Font(L"MS UI Gothic", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->tb_corrn->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(128)));
 			this->tb_corrn->Location = System::Drawing::Point(170, 16);
 			this->tb_corrn->Name = L"tb_corrn";
@@ -216,7 +216,7 @@ namespace gnsssdrgui {
 			this->groupBox2->Controls->Add(this->label8);
 			this->groupBox2->Controls->Add(this->label9);
 			this->groupBox2->Controls->Add(this->tb_dll1);
-			this->groupBox2->Font = (gcnew System::Drawing::Font(L"MS UI Gothic", 9, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+			this->groupBox2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(128)));
 			this->groupBox2->Location = System::Drawing::Point(9, 109);
 			this->groupBox2->Name = L"groupBox2";
@@ -228,7 +228,7 @@ namespace gnsssdrgui {
 			// label7
 			// 
 			this->label7->AutoSize = true;
-			this->label7->Font = (gcnew System::Drawing::Font(L"MS UI Gothic", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->label7->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(128)));
 			this->label7->Location = System::Drawing::Point(173, 105);
 			this->label7->Name = L"label7";
@@ -238,7 +238,7 @@ namespace gnsssdrgui {
 			// 
 			// tb_fll2
 			// 
-			this->tb_fll2->Font = (gcnew System::Drawing::Font(L"MS UI Gothic", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->tb_fll2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(128)));
 			this->tb_fll2->Location = System::Drawing::Point(201, 102);
 			this->tb_fll2->Name = L"tb_fll2";
@@ -249,7 +249,7 @@ namespace gnsssdrgui {
 			// label13
 			// 
 			this->label13->AutoSize = true;
-			this->label13->Font = (gcnew System::Drawing::Font(L"MS UI Gothic", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->label13->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(128)));
 			this->label13->Location = System::Drawing::Point(95, 105);
 			this->label13->Name = L"label13";
@@ -259,7 +259,7 @@ namespace gnsssdrgui {
 			// 
 			// tb_pll2
 			// 
-			this->tb_pll2->Font = (gcnew System::Drawing::Font(L"MS UI Gothic", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->tb_pll2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(128)));
 			this->tb_pll2->Location = System::Drawing::Point(123, 102);
 			this->tb_pll2->Name = L"tb_pll2";
@@ -270,7 +270,7 @@ namespace gnsssdrgui {
 			// label14
 			// 
 			this->label14->AutoSize = true;
-			this->label14->Font = (gcnew System::Drawing::Font(L"MS UI Gothic", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->label14->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(128)));
 			this->label14->Location = System::Drawing::Point(17, 105);
 			this->label14->Name = L"label14";
@@ -280,7 +280,7 @@ namespace gnsssdrgui {
 			// 
 			// tb_dll2
 			// 
-			this->tb_dll2->Font = (gcnew System::Drawing::Font(L"MS UI Gothic", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->tb_dll2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(128)));
 			this->tb_dll2->Location = System::Drawing::Point(45, 102);
 			this->tb_dll2->Name = L"tb_dll2";
@@ -291,7 +291,7 @@ namespace gnsssdrgui {
 			// label12
 			// 
 			this->label12->AutoSize = true;
-			this->label12->Font = (gcnew System::Drawing::Font(L"MS UI Gothic", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->label12->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(128)));
 			this->label12->Location = System::Drawing::Point(13, 85);
 			this->label12->Name = L"label12";
@@ -302,7 +302,7 @@ namespace gnsssdrgui {
 			// label11
 			// 
 			this->label11->AutoSize = true;
-			this->label11->Font = (gcnew System::Drawing::Font(L"MS UI Gothic", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->label11->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(128)));
 			this->label11->Location = System::Drawing::Point(173, 60);
 			this->label11->Name = L"label11";
@@ -312,7 +312,7 @@ namespace gnsssdrgui {
 			// 
 			// tb_fll1
 			// 
-			this->tb_fll1->Font = (gcnew System::Drawing::Font(L"MS UI Gothic", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->tb_fll1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(128)));
 			this->tb_fll1->Location = System::Drawing::Point(201, 56);
 			this->tb_fll1->Name = L"tb_fll1";
@@ -323,7 +323,7 @@ namespace gnsssdrgui {
 			// label10
 			// 
 			this->label10->AutoSize = true;
-			this->label10->Font = (gcnew System::Drawing::Font(L"MS UI Gothic", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->label10->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(128)));
 			this->label10->Location = System::Drawing::Point(95, 60);
 			this->label10->Name = L"label10";
@@ -333,7 +333,7 @@ namespace gnsssdrgui {
 			// 
 			// tb_pll1
 			// 
-			this->tb_pll1->Font = (gcnew System::Drawing::Font(L"MS UI Gothic", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->tb_pll1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(128)));
 			this->tb_pll1->Location = System::Drawing::Point(123, 56);
 			this->tb_pll1->Name = L"tb_pll1";
@@ -344,7 +344,7 @@ namespace gnsssdrgui {
 			// label6
 			// 
 			this->label6->AutoSize = true;
-			this->label6->Font = (gcnew System::Drawing::Font(L"MS UI Gothic", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->label6->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(128)));
 			this->label6->Location = System::Drawing::Point(17, 60);
 			this->label6->Name = L"label6";
@@ -355,7 +355,7 @@ namespace gnsssdrgui {
 			// label8
 			// 
 			this->label8->AutoSize = true;
-			this->label8->Font = (gcnew System::Drawing::Font(L"MS UI Gothic", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->label8->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(128)));
 			this->label8->Location = System::Drawing::Point(13, 39);
 			this->label8->Name = L"label8";
@@ -366,7 +366,7 @@ namespace gnsssdrgui {
 			// label9
 			// 
 			this->label9->AutoSize = true;
-			this->label9->Font = (gcnew System::Drawing::Font(L"MS UI Gothic", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->label9->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(128)));
 			this->label9->Location = System::Drawing::Point(6, 20);
 			this->label9->Name = L"label9";
@@ -376,7 +376,7 @@ namespace gnsssdrgui {
 			// 
 			// tb_dll1
 			// 
-			this->tb_dll1->Font = (gcnew System::Drawing::Font(L"MS UI Gothic", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->tb_dll1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(128)));
 			this->tb_dll1->Location = System::Drawing::Point(45, 56);
 			this->tb_dll1->Name = L"tb_dll1";
