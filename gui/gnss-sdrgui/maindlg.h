@@ -686,8 +686,9 @@ private:
 			this->cmb_input->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
 			this->cmb_input->FormattingEnabled = true;
-			this->cmb_input->Items->AddRange(gcnew cli::array< System::Object^  >(10) {
-				L"GN3Sv2", L"GN3Sv3", L"RTL-SDR", L"BladeRF", L"File (STEREO)",
+			this->cmb_input->Items->AddRange(gcnew cli::array< System::Object^  >(11) 
+			{
+				L"GN3Sv2", L"GN3Sv3", L"RTL-SDR", L"BladeRF", L"Simple 8B", L"File (STEREO)",
 					L"File (GN3Sv2)", L"File (GN3Sv3)", L"File (RTL-SDR)", L"File (BladeRF)", L"File"
 			});
 			this->cmb_input->Location = System::Drawing::Point(69, 16);
@@ -3421,6 +3422,37 @@ private:
                      config->tb_corrd="3";
                      config->tb_corrp="6";
                      break;
+
+				 case FEND_SIMPLE8B: /* SIMPLE8B */
+					 cb_freq_L1();
+
+					 tb_input1->Enabled = false;
+					 b_input1->Enabled = false;
+					 l_input1->Enabled = false;
+					 tb_input2->Enabled = false;
+					 b_input2->Enabled = false;
+					 chk_input2->Enabled = false;
+					 l_input2->Enabled = false;
+					 rb_f1I->Checked = true;
+					 rb_f2IQ->Checked = true;
+					 tb_f1sf->Text = "38.1943";
+					 tb_f1if->Text = "9.453700";
+					 tb_f2sf->Text = "0.0";
+					 tb_f2if->Text = "0.0";
+
+					 chk_input2->Checked = false;
+					 chk_input2->Enabled = false;
+
+					 ppm_disable();
+
+					 disable_FE2();
+
+					 config->tb_corrn = "6";
+					 config->tb_corrd = "3";
+					 config->tb_corrp = "6";
+					 break;
+
+
                  case FEND_RTLSDR: /* RTLSDR */
                      cb_freq_L1();
 
@@ -3699,6 +3731,12 @@ private:
                          config->tb_corrd="3";
                          config->tb_corrp="6";
                          break;
+					 case FEND_SIMPLE8B: /* File (GN3Sv3) */
+						 cb_freq_L1();
+						 config->tb_corrn = "6";
+						 config->tb_corrd = "3";
+						 config->tb_corrp = "6";
+						 break;
                      case FEND_FRTLSDR: /* File (RTLSDR) */
                          cb_freq_L1();
                          config->tb_corrn="4";

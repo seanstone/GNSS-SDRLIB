@@ -135,6 +135,9 @@
     <ClCompile Include="..\..\src\rcv\gn3s\fusb_win32.cpp">
       <Filter>sdr\rcv\gn3s</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\rcv\gn3s\simple_rf.cpp">
+      <Filter>sdr\rcv\gn3s</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="monitordlg.h">
@@ -181,6 +184,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\frontends.h">
       <Filter>sdr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\rcv\gn3s\simple_rf.h">
+      <Filter>sdr\rcv\gn3s</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -53,6 +53,7 @@
 #include "rtklib/rtklib.h"
 #include "usb/lusb0_usb.h"
 #include "gn3s/gn3s.h"
+#include "gn3s/simple_rf.h"
 #include "bladerf/libbladeRF.h"
 #include "rtlsdr/rtl-sdr.h"
 
@@ -355,7 +356,7 @@ typedef struct {
     int specflag;        /* spectrum flag */
     int buffsize;        /* data buffer size */
     int fendbuffsize;    /* front end data buffer size */
-    unsigned char *buff; /* IF data buffer */
+    unsigned char *buff; /* IF data buffer, raw data from the frontend get here */
     unsigned char *buff2;/* IF data buffer (for file input) */
     uint64_t buffcnt;    /* current buffer location, incremented when one "packet" is received from radio or read from file */
 } sdrstat_t;

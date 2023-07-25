@@ -53,7 +53,7 @@ extern int gn3s_init(void)
             }
         }
     }
-    fx2_d.usb_fx2_init();
+    fx2_d.usb_fx2_init(0);
     /* version 2 */
     if (version==2) {
         fx2_d.usrp_xfer(VRQ_XFER, 1);
