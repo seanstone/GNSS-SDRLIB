@@ -112,15 +112,15 @@ extern void simple_rf_getbuf(uint64_t buffloc, int n, int dtype, char *expbuf)
     int nout = (int)((membuffloc + n) - (MEMBUFFLEN * simple_rf_read_buf_size));
 
     mlock(hbuffmtx);
-    if (nout > 0) 
+	if (nout > 0)
 	{
-		simple_rf_exp(&sdrstat.buff[membuffloc], n - nout, expbuf);
-		simple_rf_exp(&sdrstat.buff[0], nout, &expbuf[n - nout]);
-    } 
-	else 
+		memcpy(expbuf, &sdrstat.buff[membuffloc], n - nout);
+		memcpy(&expbuf[n - nout], &sdrstat.buff[0], nout);
+	}
+	else
 	{
-		simple_rf_exp(&sdrstat.buff[membuffloc], n, expbuf);
-    }
+		memcpy(expbuf, &sdrstat.buff[membuffloc], n);
+	}
     unmlock(hbuffmtx);
 }
 
@@ -171,16 +171,17 @@ extern int simple_rf_pushtomembuf(void)
 	//One USB byte is 4 ADC samples
 	uint8_t tmp_usb_buf[SIMPLE_RF_BUFFSIZE / 4];
 
-    mlock(hbuffmtx);
+    
 	nbuff = fx2_d2.read_IF_simple(tmp_usb_buf, SIMPLE_RF_BUFFSIZE / 4);
 	nbuff = nbuff * 4;
 	if (nbuff == simple_rf_read_buf_size)
 	{
+		mlock(hbuffmtx);
 		uint8_t *dst_p = &sdrstat.buff[(sdrstat.buffcnt % MEMBUFFLEN) * simple_rf_read_buf_size];
 		simple_rf_convert_8bit(tmp_usb_buf, dst_p);
+		unmlock(hbuffmtx);
 	}
-    unmlock(hbuffmtx);
-
+    
     if (nbuff!= simple_rf_read_buf_size) 
 	{
         SDRPRINTF("Simple frontend read IF error...\n");
@@ -193,7 +194,7 @@ extern int simple_rf_pushtomembuf(void)
     return 0;
 }
 /* push data to memory buffer --------------------------------------------------
-* post-processing function: push data to memory buffer from binary IF file
+* post-processing function: push data to memory buffer from binary IF FILE
 * args   : none
 * return : none
 *-----------------------------------------------------------------------------*/

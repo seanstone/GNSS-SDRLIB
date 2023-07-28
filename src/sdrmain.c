@@ -4,6 +4,8 @@
 * Copyright (C) 2014 Taro Suzuki <gnsssdrlib@gmail.com>
 *-----------------------------------------------------------------------------*/
 #include "sdr.h"
+#include <chrono>
+#include <time.h>
 
 /* global variables ----------------------------------------------------------*/
 #ifdef GUI
@@ -231,6 +233,8 @@ extern void sdrthread(void *arg)
 extern void *sdrthread(void *arg)
 #endif
 {
+	using namespace std::chrono;
+
     sdrch_t *sdr=(sdrch_t*)arg;
     sdrplt_t pltacq={0},plttrk={0};
 	/* Time is ms? */ 
@@ -256,6 +260,9 @@ extern void *sdrthread(void *arg)
     //sleepms(sdr->no*500);
     SDRPRINTF("**** %s sdr thread %d start! ****\n",sdr->satstr,sdr->no);
 
+	long long pvev_seconds = 0;
+	int prev_cnt = 0;
+
     while (!sdrstat.stopflag) 
 	{
         /* acquisition */
@@ -275,7 +282,7 @@ extern void *sdrthread(void *arg)
                 plot(&pltacq); //plot aquisition
             }
         }
-        /* tracking */
+        /* tracking - 1 GNSS code (1023 chips for GPS) */
         if (sdr->flagacq) 
 		{
             bufflocnow=sdrtracking(sdr,buffloc,cnt); //correlator + sdrnavigation there
@@ -328,6 +335,24 @@ extern void *sdrthread(void *arg)
 
                 if (sdr->no==1 && (cnt%(1000*10)==0)) //10s when cnt is in ms
                     SDRPRINTF("Tracking process %d sec...\n",(int)cnt/(1000));
+				
+				if (sdr->no == 1)
+				{
+					high_resolution_clock::time_point t1 = high_resolution_clock::now();
+					auto nanosec = t1.time_since_epoch();
+					auto seconds = std::chrono::duration_cast<std::chrono::seconds>(nanosec);
+					long long sec = seconds.count();
+
+					if (pvev_seconds != sec)
+					{
+						int diff = cnt - prev_cnt;
+						SDRPRINTF("Tracking cnt diff: %li\n", (int)diff);
+						pvev_seconds = sec;
+						prev_cnt = cnt;
+					}
+				}
+				
+				
 
                 /* write tracking log */
 				if (sdrini.log)

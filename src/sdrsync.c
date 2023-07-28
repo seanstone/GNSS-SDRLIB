@@ -69,7 +69,8 @@ extern void *syncthread(void * arg)
                 reftow=trk[i].tow[0];
         }
         /* output timing check */
-        if (nsat==0||oldreftow==reftow||((int)(reftow*1000)%sdrini.outms)!=0) {
+        if (nsat==0 || oldreftow==reftow || ((int)(reftow*1000) % sdrini.outms)!=0) 
+		{
             continue;
         }
         /* select same timing index */

@@ -40,9 +40,10 @@ extern uint64_t sdrtracking(sdrch_t *sdr, uint64_t buffloc, uint64_t cnt)
 		{
 			SDRPRINTF("Tracking: Currsample < 0\n");
 		}
-        rcvgetbuff(&sdrini,buffloc,sdr->currnsamp,sdr->ftype,sdr->dtype,data);
+		//Copy sdr->currnsamp samples of data to the "data" buffer
+        rcvgetbuff(&sdrini, buffloc,sdr->currnsamp,sdr->ftype,sdr->dtype,data);
 
-		///Copy II/QQ to oldI/oldQ before calculating new  II/QQ
+		//Copy II/QQ to oldI/oldQ before calculating new  II/QQ
         memcpy(sdr->trk.oldI,sdr->trk.II,1+2*sdr->trk.corrn*sizeof(double));
         memcpy(sdr->trk.oldQ,sdr->trk.QQ,1+2*sdr->trk.corrn*sizeof(double));
 

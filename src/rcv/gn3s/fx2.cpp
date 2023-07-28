@@ -63,6 +63,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
  * Also, part of the code is taken from "ezusb.c"
  * Copyright © 2001 Stephen Williams (steve@icarus.com)
  * Copyright © 2001-2002 David Brownell (dbrownell@users.sourceforge.net)

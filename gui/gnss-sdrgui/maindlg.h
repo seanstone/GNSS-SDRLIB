@@ -3435,7 +3435,7 @@ private:
 					 l_input2->Enabled = false;
 					 rb_f1I->Checked = true;
 					 rb_f2IQ->Checked = true;
-					 tb_f1sf->Text = "38.1943";
+					 tb_f1sf->Text = "19.09715";
 					 tb_f1if->Text = "9.453700";
 					 tb_f2sf->Text = "0.0";
 					 tb_f2if->Text = "0.0";
