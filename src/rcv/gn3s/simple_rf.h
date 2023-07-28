@@ -4,7 +4,7 @@
 * Copyright (C) 2023 iliasam
 *-----------------------------------------------------------------------------*/
 
-#define SIMPLE_RF_BUFFSIZE      (32*512)*2 //(16 kb)
+#define SIMPLE_RF_BUFFSIZE      (32*512)*6 //(16 kb)
 #define SIMPLE_RF_FILE_READ_RATIO	16
 
 extern int simple_rf_init(void);

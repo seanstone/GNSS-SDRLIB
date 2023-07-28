@@ -36,6 +36,10 @@ namespace gnsssdrgui {
     public: System::Windows::Forms::GroupBox^  gb_input;
     protected: 
 
+	public: System::Windows::Forms::RichTextBox^  TextBoxMonitor;
+	public: gnsssdrgui::monitordlg^ monitor;
+
+
     public: System::Windows::Forms::Button^  b_input1;
     public: System::Windows::Forms::TextBox^  tb_input1;
     public: System::Windows::Forms::ComboBox^  cmb_input;
@@ -106,7 +110,7 @@ namespace gnsssdrgui {
     public: System::Windows::Forms::Button^  b_exit;
 
     public: radardlg^ radar;
-    public: monitordlg^ monitor;
+    
     public: trkprmdlg^ trkprm;
     public: SDR^ sdr;
     public: System::Windows::Forms::Button^  b_input2;
@@ -273,6 +277,7 @@ namespace gnsssdrgui {
     public: System::Windows::Forms::CheckBox^  chk_TYPE_SBASL1;
 
 
+
     public: System::Windows::Forms::CheckBox^  chk_SALL;
     public: System::Windows::Forms::CheckBox^  chk_R3;
     public: System::Windows::Forms::CheckBox^  chk_C04;
@@ -340,6 +345,15 @@ namespace gnsssdrgui {
     private: System::Windows::Forms::Button^  b_radar;
 public: System::Windows::Forms::CheckBox^  chk_E22;
 public: System::Windows::Forms::CheckBox^  chk_E25;
+private: System::Windows::Forms::Panel^  panelSysStrl;
+private: System::Windows::Forms::Timer^  timerUpdateGUI;
+public: System::Windows::Forms::CheckBox^  chk_E27;
+private:
+
+private: System::ComponentModel::IContainer^  components;
+public:
+
+public:
 
 private:
 	public:
@@ -355,11 +369,12 @@ private:
     public: 
 
     private:
-        System::ComponentModel::Container ^components;
+
 
 #pragma region Windows Form Designer generated code
         void InitializeComponent(void)
         {
+			this->components = (gcnew System::ComponentModel::Container());
 			System::ComponentModel::ComponentResourceManager^  resources = (gcnew System::ComponentModel::ComponentResourceManager(maindlg::typeid));
 			this->gb_input = (gcnew System::Windows::Forms::GroupBox());
 			this->chk_input2 = (gcnew System::Windows::Forms::CheckBox());
@@ -555,6 +570,9 @@ private:
 			this->tb_lat = (gcnew System::Windows::Forms::TextBox());
 			this->label6 = (gcnew System::Windows::Forms::Label());
 			this->b_radar = (gcnew System::Windows::Forms::Button());
+			this->panelSysStrl = (gcnew System::Windows::Forms::Panel());
+			this->timerUpdateGUI = (gcnew System::Windows::Forms::Timer(this->components));
+			this->chk_E27 = (gcnew System::Windows::Forms::CheckBox());
 			this->gb_input->SuspendLayout();
 			this->gb_output->SuspendLayout();
 			this->gb_setting->SuspendLayout();
@@ -569,6 +587,7 @@ private:
 			this->gb_bds->SuspendLayout();
 			this->gb_sbs->SuspendLayout();
 			this->gb_misc->SuspendLayout();
+			this->panelSysStrl->SuspendLayout();
 			this->SuspendLayout();
 			// 
 			// gb_input
@@ -686,10 +705,9 @@ private:
 			this->cmb_input->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
 			this->cmb_input->FormattingEnabled = true;
-			this->cmb_input->Items->AddRange(gcnew cli::array< System::Object^  >(11) 
-			{
-				L"GN3Sv2", L"GN3Sv3", L"RTL-SDR", L"BladeRF", L"Simple 8B", L"File (STEREO)",
-					L"File (GN3Sv2)", L"File (GN3Sv3)", L"File (RTL-SDR)", L"File (BladeRF)", L"File"
+			this->cmb_input->Items->AddRange(gcnew cli::array< System::Object^  >(11) {
+				L"GN3Sv2", L"GN3Sv3", L"RTL-SDR", L"BladeRF", L"Simple 8B",
+					L"File (STEREO)", L"File (GN3Sv2)", L"File (GN3Sv3)", L"File (RTL-SDR)", L"File (BladeRF)", L"File"
 			});
 			this->cmb_input->Location = System::Drawing::Point(69, 16);
 			this->cmb_input->Name = L"cmb_input";
@@ -1372,7 +1390,7 @@ private:
 			this->gb_gps->Controls->Add(this->chk_GALL);
 			this->gb_gps->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
-			this->gb_gps->Location = System::Drawing::Point(428, 8);
+			this->gb_gps->Location = System::Drawing::Point(7, 7);
 			this->gb_gps->Name = L"gb_gps";
 			this->gb_gps->Size = System::Drawing::Size(432, 121);
 			this->gb_gps->TabIndex = 25;
@@ -1830,7 +1848,7 @@ private:
 			this->gb_qzs->Controls->Add(this->chk_Q01);
 			this->gb_qzs->Controls->Add(this->chk_TYPE_L1CAQZS);
 			this->gb_qzs->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Bold));
-			this->gb_qzs->Location = System::Drawing::Point(428, 366);
+			this->gb_qzs->Location = System::Drawing::Point(7, 365);
 			this->gb_qzs->Name = L"gb_qzs";
 			this->gb_qzs->Size = System::Drawing::Size(432, 42);
 			this->gb_qzs->TabIndex = 26;
@@ -2024,7 +2042,7 @@ private:
 			this->gb_glo->Controls->Add(this->chk_TYPE_G1);
 			this->gb_glo->Controls->Add(this->chk_RALL);
 			this->gb_glo->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Bold));
-			this->gb_glo->Location = System::Drawing::Point(428, 130);
+			this->gb_glo->Location = System::Drawing::Point(7, 129);
 			this->gb_glo->Name = L"gb_glo";
 			this->gb_glo->Size = System::Drawing::Size(432, 85);
 			this->gb_glo->TabIndex = 58;
@@ -2255,6 +2273,7 @@ private:
 			// 
 			// gb_gal
 			// 
+			this->gb_gal->Controls->Add(this->chk_E27);
 			this->gb_gal->Controls->Add(this->chk_E25);
 			this->gb_gal->Controls->Add(this->chk_E22);
 			this->gb_gal->Controls->Add(this->rb_E_FE2);
@@ -2266,7 +2285,7 @@ private:
 			this->gb_gal->Controls->Add(this->chk_TYPE_E1B);
 			this->gb_gal->Controls->Add(this->chk_EALL);
 			this->gb_gal->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Bold));
-			this->gb_gal->Location = System::Drawing::Point(428, 216);
+			this->gb_gal->Location = System::Drawing::Point(7, 215);
 			this->gb_gal->Name = L"gb_gal";
 			this->gb_gal->Size = System::Drawing::Size(432, 65);
 			this->gb_gal->TabIndex = 59;
@@ -2420,7 +2439,7 @@ private:
 			this->gb_bds->Controls->Add(this->chk_TYPE_B1I);
 			this->gb_bds->Controls->Add(this->chk_CALL);
 			this->gb_bds->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Bold));
-			this->gb_bds->Location = System::Drawing::Point(428, 282);
+			this->gb_bds->Location = System::Drawing::Point(7, 281);
 			this->gb_bds->Name = L"gb_bds";
 			this->gb_bds->Size = System::Drawing::Size(432, 83);
 			this->gb_bds->TabIndex = 60;
@@ -2675,7 +2694,7 @@ private:
 			this->gb_sbs->Controls->Add(this->chk_TYPE_SBASL1);
 			this->gb_sbs->Controls->Add(this->chk_SALL);
 			this->gb_sbs->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Bold));
-			this->gb_sbs->Location = System::Drawing::Point(428, 410);
+			this->gb_sbs->Location = System::Drawing::Point(7, 409);
 			this->gb_sbs->Name = L"gb_sbs";
 			this->gb_sbs->Size = System::Drawing::Size(432, 83);
 			this->gb_sbs->TabIndex = 61;
@@ -3048,16 +3067,43 @@ private:
 			this->b_radar->UseVisualStyleBackColor = true;
 			this->b_radar->Click += gcnew System::EventHandler(this, &maindlg::b_radar_Click);
 			// 
+			// panelSysStrl
+			// 
+			this->panelSysStrl->Controls->Add(this->gb_gps);
+			this->panelSysStrl->Controls->Add(this->gb_qzs);
+			this->panelSysStrl->Controls->Add(this->gb_sbs);
+			this->panelSysStrl->Controls->Add(this->gb_glo);
+			this->panelSysStrl->Controls->Add(this->gb_bds);
+			this->panelSysStrl->Controls->Add(this->gb_gal);
+			this->panelSysStrl->Location = System::Drawing::Point(428, 8);
+			this->panelSysStrl->Name = L"panelSysStrl";
+			this->panelSysStrl->Size = System::Drawing::Size(450, 505);
+			this->panelSysStrl->TabIndex = 63;
+			// 
+			// timerUpdateGUI
+			// 
+			this->timerUpdateGUI->Interval = 1000;
+			this->timerUpdateGUI->Tick += gcnew System::EventHandler(this, &maindlg::timerUpdateGUI_Tick);
+			// 
+			// chk_E27
+			// 
+			this->chk_E27->AutoSize = true;
+			this->chk_E27->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
+			this->chk_E27->Location = System::Drawing::Point(272, 40);
+			this->chk_E27->Name = L"chk_E27";
+			this->chk_E27->Size = System::Drawing::Size(45, 17);
+			this->chk_E27->TabIndex = 60;
+			this->chk_E27->Text = L"E27";
+			this->chk_E27->UseVisualStyleBackColor = true;
+			// 
 			// maindlg
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(865, 498);
+			this->ClientSize = System::Drawing::Size(883, 517);
+			this->Controls->Add(this->panelSysStrl);
 			this->Controls->Add(this->gb_misc);
-			this->Controls->Add(this->gb_sbs);
-			this->Controls->Add(this->gb_bds);
-			this->Controls->Add(this->gb_gal);
-			this->Controls->Add(this->gb_glo);
 			this->Controls->Add(this->chk_monitor);
 			this->Controls->Add(this->rb_spec2);
 			this->Controls->Add(this->rb_spec1);
@@ -3065,8 +3111,6 @@ private:
 			this->Controls->Add(this->b_exit);
 			this->Controls->Add(this->b_stop);
 			this->Controls->Add(this->b_start);
-			this->Controls->Add(this->gb_qzs);
-			this->Controls->Add(this->gb_gps);
 			this->Controls->Add(this->gb_setting);
 			this->Controls->Add(this->gb_output);
 			this->Controls->Add(this->gb_input);
@@ -3105,6 +3149,7 @@ private:
 			this->gb_sbs->PerformLayout();
 			this->gb_misc->ResumeLayout(false);
 			this->gb_misc->PerformLayout();
+			this->panelSysStrl->ResumeLayout(false);
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
@@ -3671,7 +3716,43 @@ private:
                 gb_qzs->Enabled=false;
                 gb_sbs->Enabled=false;
                 chk_spec->Enabled=true;
+				panelSysStrl->Visible = false;
+				this->TextBoxMonitor->Visible = true;
+
+				timerUpdateGUI->Enabled = true;
             }
+
+	private: System::Void timerUpdateGUI_Tick(System::Object^  sender, System::EventArgs^  e)
+	{
+		int sat_count = sdr->get_sat_count();
+		if (sat_count <= 0)
+			return;
+
+		char tmp_string[128];
+		this->TextBoxMonitor->Text = "";
+
+		for (int i = 0; i < sat_count; i++)
+		{
+			sdr->get_sat_info(i, tmp_string);
+			this->TextBoxMonitor->AppendText(gcnew String(tmp_string));
+			//this->TextBoxMonitor->Text += gcnew String(tmp_string);
+		}
+		this->TextBoxMonitor->Update();
+
+		
+	}
+
+	private:  System::Void CreateControlMonitor(System::Void)
+	{
+		this->TextBoxMonitor = (gcnew System::Windows::Forms::RichTextBox());
+		this->TextBoxMonitor->Location = System::Drawing::Point(428, 8);
+		this->TextBoxMonitor->Name = L"ControlMonitor";
+		this->TextBoxMonitor->Size = System::Drawing::Size(450, 505);
+		this->Controls->Add(this->TextBoxMonitor);
+		this->TextBoxMonitor->Visible = false;
+		this->TextBoxMonitor->ReadOnly = true;
+	}
+
     private: System::Void b_stop_Click(System::Object^  sender, System::EventArgs^  e) {
                  sdr->stop(this);
              }
@@ -3759,6 +3840,7 @@ private:
                      WriteConfig();
                  }
 
+				 CreateControlMonitor();
                  loadform();
              }
     private: System::Void maindlg_FormClosing(System::Object^  sender, System::Windows::Forms::FormClosingEventArgs^  e) {
@@ -3801,6 +3883,9 @@ private:
                 gb_sbs->Enabled=true;
                 chk_spec->Checked=false;
                 chk_spec->Enabled=false;
+				panelSysStrl->Visible = true;
+				timerUpdateGUI->Enabled = true;
+				this->TextBoxMonitor->Visible = false;
             }
     private: String^ GetUserAppDataPath(void)
              {
@@ -4335,5 +4420,6 @@ private:
 
 	private: System::Void chk_spec_CheckedChanged(System::Object^  sender, System::EventArgs^  e) {
 	}
-};
+
+	};
 }

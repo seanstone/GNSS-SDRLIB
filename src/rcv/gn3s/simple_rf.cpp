@@ -170,15 +170,18 @@ extern int simple_rf_pushtomembuf(void)
 
 	//One USB byte is 4 ADC samples
 	uint8_t tmp_usb_buf[SIMPLE_RF_BUFFSIZE / 4];
+	uint8_t extracted_buf[SIMPLE_RF_BUFFSIZE];
 
     
 	nbuff = fx2_d2.read_IF_simple(tmp_usb_buf, SIMPLE_RF_BUFFSIZE / 4);
 	nbuff = nbuff * 4;
 	if (nbuff == simple_rf_read_buf_size)
 	{
+		simple_rf_convert_8bit(tmp_usb_buf, extracted_buf);
 		mlock(hbuffmtx);
 		uint8_t *dst_p = &sdrstat.buff[(sdrstat.buffcnt % MEMBUFFLEN) * simple_rf_read_buf_size];
-		simple_rf_convert_8bit(tmp_usb_buf, dst_p);
+		//simple_rf_convert_8bit(tmp_usb_buf, dst_p);
+		memcpy(dst_p, extracted_buf, SIMPLE_RF_BUFFSIZE);
 		unmlock(hbuffmtx);
 	}
     

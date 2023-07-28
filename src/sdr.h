@@ -141,7 +141,7 @@ extern "C" {
 #define ACQINTG_SBAS  4               /* number of non-coherent integration */
 #define ACQHBAND      7000             /* half width for doppler search (Hz) */
 #define ACQSTEP       100              /* doppler search frequency step (Hz) */
-#define ACQTH         2.5              /* acquisition threshold (peak ratio) */
+#define ACQTH         2.1              /* acquisition threshold (peak ratio) */
 #define ACQSLEEP      2000             /* acquisition process interval (ms) */
 
 /* tracking setting */
@@ -152,6 +152,9 @@ extern "C" {
 #define LOOP_B1IG     2                /* loop interval */
 #define LOOP_SBAS     2                /* loop interval */
 #define LOOP_LEX      4                /* loop interval */
+		
+#define TRACK_LOST_SUMM	20.0			/* Threshold of I-summ, whele treking loss is detected*/
+#define TRACK_RESTORE_TIME_MS	(10000)
 
 /* navigation parameter */
 #define NAVSYNCTH       50             /* navigation frame synch. threshold */
@@ -387,6 +390,8 @@ typedef struct {
     int nfft;            /* number of FFT points */
     double cn0;          /* signal C/N0 */ 
     double peakr;        /* first/second peak ratio */
+	double peakr_max;    /* first/second peak ratio - internal value*/
+	double peakr_max_fin; /* first/second peak ratio - final value*/
 } sdracq_t;
 
 /* sdr tracking parameter struct */
@@ -432,6 +437,7 @@ typedef struct {
     double *oldsumI;     /* previous integrated correlation (I-phase) */
     double *oldsumQ;     /* previous integrated correlation (Q-phase) */
     double Isum;         /* correlation for SNR computation (I-phase) */
+	double Isum_fin;     /* correlation for SNR computation (I-phase) - final*/
     int loop;            /* loop filter interval */
     int loopms;          /* loop filter interval (ms) */
     int flagpolarityadd; /* polarity (half cycle ambiguity) add flag */
@@ -443,6 +449,7 @@ typedef struct {
     int ne,nl;           /* early/late correlation point */
     sdrtrkprm_t prm1;    /* tracking parameter struct */
     sdrtrkprm_t prm2;    /* tracking parameter struct */
+	int track_loss_cnt;
 } sdrtrk_t;
 
 /* sdr ephemeris struct */

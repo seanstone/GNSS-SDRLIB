@@ -7,6 +7,8 @@ using namespace System::Globalization;
 void setsdrini(bool bsat, int sat, int sys, int ftype, bool L1, bool sbas, bool lex, sdrini_t *ini);
 double str2double(String^value, char split);
 
+int satCount = 0;
+
 [STAThreadAttribute]
 int main(array<System::String ^> ^args)
 {
@@ -16,6 +18,48 @@ int main(array<System::String ^> ^args)
     Application::Run(gcnew maindlg());
     return 0;
 }
+
+int SDR::get_sat_count(System::Void)
+{
+	return satCount;
+}
+int SDR::get_sat_info(int index, char * info)
+{
+	if (sdrch[index].no == 0)
+		return -1;
+
+	info += sprintf(info, "SAT: %s", sdrch[index].satstr);
+
+	if (!sdrch[index].flagacq)
+	{
+		info += sprintf(info, " Acquisition ");
+		info += sprintf(info, "Peak: %3.1f", sdrch[index].acq.peakr_max_fin);
+	}
+	else
+	{
+		info += sprintf(info, " Tracking ");
+		info += sprintf(info, "SNR: %4.1f ", sdrch[index].trk.S[0]);
+		double summ_value = sdrch[index].trk.Isum_fin / 1000.0;
+		info += sprintf(info, "I-Summ: %.1f K ", summ_value);
+
+		if ((summ_value < TRACK_LOST_SUMM) && (summ_value > 0.0))
+		{
+			//Tracking lost
+			info += sprintf(info, " LOST! ");
+		}
+		else
+		{
+			if (sdrch[index].nav.flagtow)
+			{
+				info += sprintf(info, "Week=%i ", sdrch[index].nav.sdreph.week_gpst);
+			}
+		}
+	}
+	
+	info += sprintf(info, "\n");
+	return 1;
+}
+
 /* sdr start function */
 System::Void SDR::start(System::Object^ obj)
 {
@@ -25,7 +69,7 @@ System::Void SDR::start(System::Object^ obj)
     char *str,split;
     struct lconv *lc;
     
-    setlocale( LC_ALL, ".ACP" );
+    setlocale( LC_ALL, ".ACP" ); //?????
     lc=localeconv();
     split=lc->decimal_point[0];
 
@@ -127,6 +171,7 @@ System::Void SDR::start(System::Object^ obj)
     setsdrini(form->chk_E20->Checked,20,SYS_GAL,form->rb_E_FE2->Checked,form->chk_TYPE_E1B->Checked,false,false,&sdrini);
 	setsdrini(form->chk_E22->Checked,22,SYS_GAL,form->rb_E_FE2->Checked,form->chk_TYPE_E1B->Checked, false, false, &sdrini);
 	setsdrini(form->chk_E25->Checked, 25, SYS_GAL, form->rb_E_FE2->Checked, form->chk_TYPE_E1B->Checked, false, false, &sdrini);
+	setsdrini(form->chk_E27->Checked, 27, SYS_GAL, form->rb_E_FE2->Checked, form->chk_TYPE_E1B->Checked, false, false, &sdrini);
 
     /* channel setting */ /* BeiDou */
     setsdrini(form->chk_C01->Checked, 1,SYS_CMP,form->rb_C_FE2->Checked,form->chk_TYPE_B1I->Checked,false,false,&sdrini);
@@ -192,6 +237,8 @@ System::Void SDR::start(System::Object^ obj)
     if (form->tb_rtcm_port->Text!="") sdrini.rtcmport=Convert::ToInt32(form->tb_rtcm_port->Text);
     if (form->tb_lex_port->Text!="") sdrini.lexport=Convert::ToInt32(form->tb_lex_port->Text);
     if (form->tb_saif_port->Text!="") sdrini.sbasport=Convert::ToInt32(form->tb_saif_port->Text);
+
+	satCount = sdrini.nch;
 
     /* sdr initialization */
     initsdrgui(form,&sdrini);

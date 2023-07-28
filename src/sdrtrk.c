@@ -219,6 +219,7 @@ extern void setobsdata(sdrch_t *sdr, uint64_t buffloc, uint64_t cnt,
         /* signal to noise ratio */
         trk->S[0]=10*log(trk->Isum/100.0/100.0)+log(500.0)+5;
         trk->codeisum[0]=buffloc;
+		trk->Isum_fin = trk->Isum;
         trk->Isum=0;
     }
 }

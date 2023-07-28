@@ -25,6 +25,8 @@ extern uint64_t sdraccuisition(sdrch_t *sdr, double *power)
     buffloc=(sdrstat.fendbuffsize*sdrstat.buffcnt)-(sdr->acq.intg+1)*sdr->nsamp;
     unmlock(hreadmtx);
 
+	sdr->acq.peakr_max = 0.0;
+
     /* acquisition integration */
     for (i=0; i < sdr->acq.intg; i++) 
 	{
@@ -43,6 +45,9 @@ extern uint64_t sdraccuisition(sdrch_t *sdr, double *power)
             break;
         }
     }
+
+	sdr->acq.peakr_max_fin = sdr->acq.peakr_max;
+
 
     /* display acquisition results */
     SDRPRINTF("%s, C/N0=%4.1f, peak=%3.1f, codei=%5d, freq=%8.1f\n",
@@ -96,6 +101,9 @@ extern int checkacquisition(double *P, sdrch_t *sdr)
     sdr->acq.acqcodei=codei;
     sdr->acq.freqi=freqi;
     sdr->acq.acqfreq=sdr->acq.freq[freqi];
+
+	if (sdr->acq.peakr > sdr->acq.peakr_max)
+		sdr->acq.peakr_max = sdr->acq.peakr;
 
     return (sdr->acq.peakr > ACQTH);
 }
