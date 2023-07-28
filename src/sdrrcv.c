@@ -34,19 +34,18 @@ extern int rcvinit(sdrini_t *ini)
 		if (ini->fend == FEND_GN3SV2)
 		{
 			sdrstat.fendbuffsize = GN3S_BUFFSIZE / 2; /* frontend buff size */
-			sdrstat.fendbuffsize = sdrstat.fendbuffsize * GN3S_FILE_READ_RATIO;//increase to make more realtime
 			fgn3s_set_rx_buf(sdrstat.fendbuffsize);
 			sdrstat.buffsize = sdrstat.fendbuffsize * 2 * MEMBUFFLEN; /* total */
 		}
 		if (ini->fend == FEND_GN3SV3)
 		{
 			sdrstat.fendbuffsize = GN3S_BUFFSIZE; /* frontend buff size */
-			sdrstat.fendbuffsize = sdrstat.fendbuffsize * GN3S_FILE_READ_RATIO;//increase to make more realtime
 			fgn3s_set_rx_buf(sdrstat.fendbuffsize);
-			sdrstat.buffsize = sdrstat.fendbuffsize*MEMBUFFLEN; /* total */
+			sdrstat.buffsize = sdrstat.fendbuffsize * MEMBUFFLEN; /* total */
 		}
 
         /* memory allocation */
+		// This buffer is used to store raw data from USB
         sdrstat.buff=(uint8_t*)malloc(sdrstat.buffsize);
         if (NULL==sdrstat.buff) {
             SDRPRINTF("error: failed to allocate memory for the buffer\n");
@@ -74,7 +73,7 @@ extern int rcvinit(sdrini_t *ini)
 			sdrstat.fendbuffsize = GN3S_BUFFSIZE; /* frontend buff size */
 			sdrstat.fendbuffsize = sdrstat.fendbuffsize * GN3S_FILE_READ_RATIO;//increase to make more realtime
 			fgn3s_set_rx_buf(sdrstat.fendbuffsize);
-			sdrstat.buffsize = sdrstat.fendbuffsize*MEMBUFFLEN; /* total */
+			sdrstat.buffsize = sdrstat.fendbuffsize * MEMBUFFLEN; /* total */
 		}
 
         /* memory allocation */
@@ -161,6 +160,26 @@ extern int rcvinit(sdrini_t *ini)
 		SDRPRINTF("Data is taken from file, reading is not real-time\n");
         break;
 #endif
+
+	case FEND_SIMPLE8B:
+		if (simple_rf_init() < 0) 
+			return -1;
+
+		if (ini->fend == FEND_SIMPLE8B)
+		{
+			sdrstat.fendbuffsize = SIMPLE_RF_BUFFSIZE; /* frontend buff size */
+			simple_rf_set_rx_buf(sdrstat.fendbuffsize);
+			sdrstat.buffsize = sdrstat.fendbuffsize * MEMBUFFLEN; /* total */
+		}
+
+		/* memory allocation */
+		sdrstat.buff = (uint8_t*)malloc(sdrstat.buffsize);
+		if (NULL == sdrstat.buff) {
+			SDRPRINTF("error: failed to allocate memory for the buffer\n");
+			return -1;
+		}
+		break;
+
     /* File */
     case FEND_FILE:
         /* IF file open (FILE1) */
@@ -228,6 +247,9 @@ extern int rcvquit(sdrini_t *ini)
         rtlsdr_quit();
         break;
 #endif
+	case FEND_SIMPLE8B:
+		simple_rf_quit();
+		break;
     /* Front End Binary File */
     case FEND_FGN3SV2:
     case FEND_FGN3SV3:
@@ -276,6 +298,12 @@ extern int rcvgrabdata(sdrini_t *ini)
         sleepms(5);
         break;
 #endif
+	case FEND_SIMPLE8B:
+		if (simple_rf_pushtomembuf() < 0) {
+			SDRPRINTF("error: Simple Frontend Buffer overrun...\n");
+			return -1;
+		}
+		break;
 #ifdef BLADERF
     /* Nuand BladeRF */
     case FEND_BLADERF:
@@ -317,7 +345,7 @@ extern int rcvgrabdata(sdrini_t *ini)
 * get current data buffer from memory buffer
 * args   : sdrini_t *ini    I   sdr initialization struct
 *          uint64_t buffloc I   buffer location
-*          int    n         I   number of grab data 
+*          int    n         I   number of samples of data data to get
 *          int    ftype     I   front end type (FTYPE1 or FTYPE2)
 *          int    dtype     I   data type (DTYPEI or DTYPEIQ)
 *          char   *expbuff  O   extracted data buffer
@@ -346,6 +374,9 @@ extern int rcvgetbuff(sdrini_t *ini, uint64_t buffloc, int n, int ftype,
         fgn3s_getbuff(buffloc,n,dtype,expbuf);
         break;
 #endif
+	case FEND_SIMPLE8B:
+		simple_rf_getbuf(buffloc, n, dtype, expbuf);
+		break;
 #ifdef BLADERF
     /* Nuand BladeRF */
     case FEND_BLADERF:

@@ -175,10 +175,13 @@ System::Void SDR::start(System::Object^ obj)
     sdrini.plttrk=(int)form->chk_plottrk->Checked;
 
     /* output setting */
-    switch(form->cmb_outint->SelectedIndex) {
-    case 0: sdrini.outms=1000; break;
-    case 1: sdrini.outms=200; break;
-    case 2: sdrini.outms=100; break;
+    switch(form->cmb_outint->SelectedIndex) 
+	{
+		case 0: sdrini.outms=1000; break;
+		case 1: sdrini.outms=200; break;
+		case 2: sdrini.outms=100; break;
+		default:
+			sdrini.outms = 1000;
     }
     sdrini.rinex=(int)form->chk_rinex->Checked;
     sdrini.rtcm=(int)form->chk_rtcm->Checked;

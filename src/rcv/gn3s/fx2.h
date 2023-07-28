@@ -37,6 +37,9 @@
 #define VRQ_AGC		0x08
 #define VRQ_CMODE 	0x0F
 
+#define FX_TYPE_FX2        2	/* USB 2.0 versions */
+#define FX_TYPE_FX2LP      3	/* Updated FX2 */
+
 typedef struct Fx2_c
 {
     int interface_;
@@ -49,8 +52,8 @@ typedef struct Fx2_c
 class Fx2_dev
 {
 private:
-    int fx2_vid[4];
-    int fx2_pid[4];
+    int fx2_vid[5];
+    int fx2_pid[5];
     struct usb_device *fx2;
     bool fx2_AGC;
     int fx2_ret;
@@ -64,7 +67,8 @@ public:
     Fx2_dev(int i);
     ~Fx2_dev();
 
-    int usb_fx2_init(void);
+	int usb_fx2_prepare(const char *firmware_path, void(*preResetCallback)(usb_dev_handle *));
+	int usb_fx2_init(uint8_t is_simple_frontend);
     int usb_fx2_find(void);
     void print_configuration ( struct usb_config_descriptor *config );
     void print_altsetting ( struct usb_interface_descriptor *interface );
@@ -79,16 +83,26 @@ public:
     fusb_devhandle *make_devhandle ( usb_dev_handle *udh );
     int read_IF(unsigned char *ch);
     int read_IF(short *sh);
+	int read_IF_simple(unsigned char *ch, int length);
     int read_AGC(short *agc, bool *RFI,int *RFI_det, unsigned int *agc_count);
     int fx2_usb_bulk_read( char *bytes, int size,int timeout);
     bool agc_parse(char *buf, short *agc, unsigned int agc_size, unsigned int *count, bool *RFI);
     void set_port(int i);
     void read_flags(char *cp);
     void close(void);
+	int load_firmware(usb_dev_handle *device, const char *path, int fx_type,
+		void(*preResetCallback)(usb_dev_handle *));
+	int ezusb_write2(usb_dev_handle *device, const char *label,
+		uint8_t opcode, uint32_t addr, const unsigned char *data, size_t len);
 
-    static const int FUSB_BUFFER_SIZE = 16 * ( 1L << 20 ); // 8 MB
+    static const int FUSB_BUFFER_SIZE = 16 * ( 1L << 20 ); // 16 MB
     static const int FUSB_BLOCK_SIZE = 16 * ( 1L << 10 ); // 16KB is hard limit
     static const int FUSB_NBLOCKS    = FUSB_BUFFER_SIZE / FUSB_BLOCK_SIZE;
+
+	static const int FUSB_SIMPLE_BUFFER_SIZE = 128 * (1L << 20); // 128 MB
+	static const int FUSB_SIMPLE_BLOCK_SIZE = 16 * (1L << 12);
+	static const int FUSB_SIMPLE_NBLOCKS = FUSB_BUFFER_SIZE / FUSB_BLOCK_SIZE;
+
     static const int AGC_BUFFER_SIZE =16 * ( 1L << 20 ); // x
     static const int AGC_BLOCK_SIZE =16 * ( 1L << 10 );
     static const int AGC_NBLOCKS    = AGC_BUFFER_SIZE / AGC_BLOCK_SIZE;

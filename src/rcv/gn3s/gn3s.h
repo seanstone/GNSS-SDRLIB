@@ -14,10 +14,10 @@
 #define MODE_WIDE_4_IQ     142 /* SF: 4.092MHz, IF:    0MHz, 4bit, IQ */
 
 #define GN3S_MODE          MODE_NARROW_16_I /* GN3S operating mode */
-#define GN3S_DECIMATE      1      /* decimate mode */
+//#define GN3S_DECIMATE      1      /* decimate mode */
 #define GN3S_PACK          1      /* pack mode */
 #define GN3S_BUFFSIZE      32*512 /* buffer size: 16 kB */
-#define GN3S_FILE_READ_RATIO	16
+#define GN3S_FILE_READ_RATIO	35
 
 
 /* global functions */

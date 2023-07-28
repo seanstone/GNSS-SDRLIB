@@ -53,6 +53,7 @@
 #include "rtklib/rtklib.h"
 #include "usb/lusb0_usb.h"
 #include "gn3s/gn3s.h"
+#include "gn3s/simple_rf.h"
 #include "bladerf/libbladeRF.h"
 #include "rtlsdr/rtl-sdr.h"
 
@@ -124,14 +125,15 @@ extern "C" {
 #define DTYPEIQ       2                /* sampling type: real+imag */
 
 
-#define MEMBUFFLEN    5000             /* number of temporary buffer */
-//#define MEMBUFFLEN    160             /* number of temporary buffer */
+//#define MEMBUFFLEN    5000             /* number of temporary buffer */
+#define MEMBUFFLEN    1000             /* number of temporary buffer */
 
 #define FILE_BUFFSIZE 65536            /* buffer size for post processing */
 
 /* acquisition setting */
 #define NFFTTHREAD    4                /* number of thread for executing FFT */
-#define ACQINTG_L1CA  10               /* number of non-coherent integration */
+//#define ACQINTG_L1CA  10               /* number of non-coherent integration */
+#define ACQINTG_L1CA  4               /* number of non-coherent integration */
 #define ACQINTG_G1    10               /* number of non-coherent integration */
 #define ACQINTG_E1B   4                /* number of non-coherent integration */
 #define ACQINTG_B1I   10               /* number of non-coherent integration */
@@ -139,7 +141,7 @@ extern "C" {
 #define ACQINTG_SBAS  4               /* number of non-coherent integration */
 #define ACQHBAND      7000             /* half width for doppler search (Hz) */
 #define ACQSTEP       100              /* doppler search frequency step (Hz) */
-#define ACQTH         3.0              /* acquisition threshold (peak ratio) */
+#define ACQTH         2.5              /* acquisition threshold (peak ratio) */
 #define ACQSLEEP      2000             /* acquisition process interval (ms) */
 
 /* tracking setting */
@@ -355,7 +357,7 @@ typedef struct {
     int specflag;        /* spectrum flag */
     int buffsize;        /* data buffer size */
     int fendbuffsize;    /* front end data buffer size */
-    unsigned char *buff; /* IF data buffer */
+    unsigned char *buff; /* IF data buffer, raw data from the frontend get here */
     unsigned char *buff2;/* IF data buffer (for file input) */
     uint64_t buffcnt;    /* current buffer location, incremented when one "packet" is received from radio or read from file */
 } sdrstat_t;

@@ -123,70 +123,70 @@ namespace gnsssdrgui {
 				static_cast<System::Byte>(128)));
 			this->label5->Location = System::Drawing::Point(216, 65);
 			this->label5->Name = L"label5";
-			this->label5->Size = System::Drawing::Size(55, 12);
+			this->label5->Size = System::Drawing::Size(62, 15);
 			this->label5->TabIndex = 9;
 			this->label5->Text = L"(samples)";
 			// 
 			// label3
 			// 
 			this->label3->AutoSize = true;
-			this->label3->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(128)));
+			this->label3->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
 			this->label3->Location = System::Drawing::Point(4, 65);
 			this->label3->Name = L"label3";
-			this->label3->Size = System::Drawing::Size(157, 12);
+			this->label3->Size = System::Drawing::Size(148, 13);
 			this->label3->TabIndex = 7;
 			this->label3->Text = L"Tracking Half of Corr. Space: ";
 			// 
 			// tb_corrp
 			// 
-			this->tb_corrp->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(128)));
+			this->tb_corrp->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
 			this->tb_corrp->Location = System::Drawing::Point(170, 62);
 			this->tb_corrp->Name = L"tb_corrp";
-			this->tb_corrp->Size = System::Drawing::Size(45, 19);
+			this->tb_corrp->Size = System::Drawing::Size(45, 20);
 			this->tb_corrp->TabIndex = 6;
 			this->tb_corrp->Text = L"8";
 			// 
 			// label2
 			// 
 			this->label2->AutoSize = true;
-			this->label2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(128)));
+			this->label2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
 			this->label2->Location = System::Drawing::Point(4, 42);
 			this->label2->Name = L"label2";
-			this->label2->Size = System::Drawing::Size(159, 12);
+			this->label2->Size = System::Drawing::Size(145, 13);
 			this->label2->TabIndex = 5;
 			this->label2->Text = L"Interval of Correlation Points: ";
 			// 
 			// tb_corrd
 			// 
-			this->tb_corrd->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(128)));
+			this->tb_corrd->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
 			this->tb_corrd->Location = System::Drawing::Point(170, 39);
 			this->tb_corrd->Name = L"tb_corrd";
-			this->tb_corrd->Size = System::Drawing::Size(45, 19);
+			this->tb_corrd->Size = System::Drawing::Size(45, 20);
 			this->tb_corrd->TabIndex = 4;
 			this->tb_corrd->Text = L"4";
 			// 
 			// label1
 			// 
 			this->label1->AutoSize = true;
-			this->label1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(128)));
+			this->label1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
 			this->label1->Location = System::Drawing::Point(4, 20);
 			this->label1->Name = L"label1";
-			this->label1->Size = System::Drawing::Size(160, 12);
+			this->label1->Size = System::Drawing::Size(147, 13);
 			this->label1->TabIndex = 3;
 			this->label1->Text = L"Number of Correlation Points: ";
 			// 
 			// tb_corrn
 			// 
-			this->tb_corrn->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(128)));
+			this->tb_corrn->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
 			this->tb_corrn->Location = System::Drawing::Point(170, 16);
 			this->tb_corrn->Name = L"tb_corrn";
-			this->tb_corrn->Size = System::Drawing::Size(45, 19);
+			this->tb_corrn->Size = System::Drawing::Size(45, 20);
 			this->tb_corrn->TabIndex = 2;
 			this->tb_corrn->Text = L"6";
 			// 
@@ -228,159 +228,159 @@ namespace gnsssdrgui {
 			// label7
 			// 
 			this->label7->AutoSize = true;
-			this->label7->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(128)));
+			this->label7->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
 			this->label7->Location = System::Drawing::Point(173, 105);
 			this->label7->Name = L"label7";
-			this->label7->Size = System::Drawing::Size(26, 12);
+			this->label7->Size = System::Drawing::Size(28, 13);
 			this->label7->TabIndex = 20;
 			this->label7->Text = L"FLL:";
 			// 
 			// tb_fll2
 			// 
-			this->tb_fll2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(128)));
+			this->tb_fll2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
 			this->tb_fll2->Location = System::Drawing::Point(201, 102);
 			this->tb_fll2->Name = L"tb_fll2";
-			this->tb_fll2->Size = System::Drawing::Size(45, 19);
+			this->tb_fll2->Size = System::Drawing::Size(45, 20);
 			this->tb_fll2->TabIndex = 19;
 			this->tb_fll2->Text = L"50.0";
 			// 
 			// label13
 			// 
 			this->label13->AutoSize = true;
-			this->label13->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(128)));
-			this->label13->Location = System::Drawing::Point(95, 105);
+			this->label13->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
+			this->label13->Location = System::Drawing::Point(93, 105);
 			this->label13->Name = L"label13";
-			this->label13->Size = System::Drawing::Size(26, 12);
+			this->label13->Size = System::Drawing::Size(29, 13);
 			this->label13->TabIndex = 18;
 			this->label13->Text = L"PLL:";
 			// 
 			// tb_pll2
 			// 
-			this->tb_pll2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(128)));
+			this->tb_pll2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
 			this->tb_pll2->Location = System::Drawing::Point(123, 102);
 			this->tb_pll2->Name = L"tb_pll2";
-			this->tb_pll2->Size = System::Drawing::Size(45, 19);
+			this->tb_pll2->Size = System::Drawing::Size(45, 20);
 			this->tb_pll2->TabIndex = 17;
 			this->tb_pll2->Text = L"10.0";
 			// 
 			// label14
 			// 
 			this->label14->AutoSize = true;
-			this->label14->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(128)));
-			this->label14->Location = System::Drawing::Point(17, 105);
+			this->label14->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
+			this->label14->Location = System::Drawing::Point(12, 105);
 			this->label14->Name = L"label14";
-			this->label14->Size = System::Drawing::Size(27, 12);
+			this->label14->Size = System::Drawing::Size(30, 13);
 			this->label14->TabIndex = 16;
 			this->label14->Text = L"DLL:";
 			// 
 			// tb_dll2
 			// 
-			this->tb_dll2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(128)));
+			this->tb_dll2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
 			this->tb_dll2->Location = System::Drawing::Point(45, 102);
 			this->tb_dll2->Name = L"tb_dll2";
-			this->tb_dll2->Size = System::Drawing::Size(45, 19);
+			this->tb_dll2->Size = System::Drawing::Size(45, 20);
 			this->tb_dll2->TabIndex = 15;
 			this->tb_dll2->Text = L"1.0";
 			// 
 			// label12
 			// 
 			this->label12->AutoSize = true;
-			this->label12->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(128)));
+			this->label12->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
 			this->label12->Location = System::Drawing::Point(13, 85);
 			this->label12->Name = L"label12";
-			this->label12->Size = System::Drawing::Size(215, 12);
+			this->label12->Size = System::Drawing::Size(199, 13);
 			this->label12->TabIndex = 14;
 			this->label12->Text = L"After Navigation Frame Synchronaization";
 			// 
 			// label11
 			// 
 			this->label11->AutoSize = true;
-			this->label11->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(128)));
-			this->label11->Location = System::Drawing::Point(173, 60);
+			this->label11->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
+			this->label11->Location = System::Drawing::Point(171, 60);
 			this->label11->Name = L"label11";
-			this->label11->Size = System::Drawing::Size(26, 12);
+			this->label11->Size = System::Drawing::Size(28, 13);
 			this->label11->TabIndex = 13;
 			this->label11->Text = L"FLL:";
 			// 
 			// tb_fll1
 			// 
-			this->tb_fll1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(128)));
+			this->tb_fll1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
 			this->tb_fll1->Location = System::Drawing::Point(201, 56);
 			this->tb_fll1->Name = L"tb_fll1";
-			this->tb_fll1->Size = System::Drawing::Size(45, 19);
+			this->tb_fll1->Size = System::Drawing::Size(45, 20);
 			this->tb_fll1->TabIndex = 12;
 			this->tb_fll1->Text = L"200.0";
 			// 
 			// label10
 			// 
 			this->label10->AutoSize = true;
-			this->label10->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(128)));
-			this->label10->Location = System::Drawing::Point(95, 60);
+			this->label10->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
+			this->label10->Location = System::Drawing::Point(93, 60);
 			this->label10->Name = L"label10";
-			this->label10->Size = System::Drawing::Size(26, 12);
+			this->label10->Size = System::Drawing::Size(29, 13);
 			this->label10->TabIndex = 11;
 			this->label10->Text = L"PLL:";
 			// 
 			// tb_pll1
 			// 
-			this->tb_pll1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(128)));
+			this->tb_pll1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
 			this->tb_pll1->Location = System::Drawing::Point(123, 56);
 			this->tb_pll1->Name = L"tb_pll1";
-			this->tb_pll1->Size = System::Drawing::Size(45, 19);
+			this->tb_pll1->Size = System::Drawing::Size(45, 20);
 			this->tb_pll1->TabIndex = 10;
 			this->tb_pll1->Text = L"30.0";
 			// 
 			// label6
 			// 
 			this->label6->AutoSize = true;
-			this->label6->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(128)));
-			this->label6->Location = System::Drawing::Point(17, 60);
+			this->label6->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
+			this->label6->Location = System::Drawing::Point(12, 60);
 			this->label6->Name = L"label6";
-			this->label6->Size = System::Drawing::Size(27, 12);
+			this->label6->Size = System::Drawing::Size(30, 13);
 			this->label6->TabIndex = 9;
 			this->label6->Text = L"DLL:";
 			// 
 			// label8
 			// 
 			this->label8->AutoSize = true;
-			this->label8->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(128)));
+			this->label8->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
 			this->label8->Location = System::Drawing::Point(13, 39);
 			this->label8->Name = L"label8";
-			this->label8->Size = System::Drawing::Size(223, 12);
+			this->label8->Size = System::Drawing::Size(208, 13);
 			this->label8->TabIndex = 5;
 			this->label8->Text = L"Before Navigation Frame Synchronaization";
 			// 
 			// label9
 			// 
 			this->label9->AutoSize = true;
-			this->label9->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(128)));
+			this->label9->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
 			this->label9->Location = System::Drawing::Point(6, 20);
 			this->label9->Name = L"label9";
-			this->label9->Size = System::Drawing::Size(190, 12);
+			this->label9->Size = System::Drawing::Size(179, 13);
 			this->label9->TabIndex = 3;
 			this->label9->Text = L"DLL/PLL/FLL Noise Bandwidth (Hz)";
 			// 
 			// tb_dll1
 			// 
-			this->tb_dll1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(128)));
+			this->tb_dll1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
 			this->tb_dll1->Location = System::Drawing::Point(45, 56);
 			this->tb_dll1->Name = L"tb_dll1";
-			this->tb_dll1->Size = System::Drawing::Size(45, 19);
+			this->tb_dll1->Size = System::Drawing::Size(45, 20);
 			this->tb_dll1->TabIndex = 2;
 			this->tb_dll1->Text = L"5.0";
 			// 
