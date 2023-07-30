@@ -128,7 +128,7 @@ extern int rcvinit(sdrini_t *ini)
         /* frontend buffer size */
         sdrstat.fendbuffsize=RTLSDR_DATABUFF_SIZE; /* frontend buff size */
 		rtlsdr_set_rx_buf(sdrstat.fendbuffsize);
-        sdrstat.buffsize=RTLSDR_DATABUFF_SIZE*MEMBUFFLEN; /* total */
+        sdrstat.buffsize=2 * RTLSDR_DATABUFF_SIZE * MEMBUFFLEN; /* total */
 
         /* memory allocation */
         sdrstat.buff=(uint8_t*)malloc(sdrstat.buffsize);
