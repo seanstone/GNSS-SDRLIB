@@ -4,6 +4,7 @@
 * Copyright (C) 2014 Taro Suzuki <gnsssdrlib@gmail.com>
 *-----------------------------------------------------------------------------*/
 #include "sdr.h"
+#include <time.h>
 
 /* decode GPS/QZS navigation data (subframe 1) ---------------------------------
 *
@@ -36,6 +37,7 @@ void decode_subfrm1(const uint8_t *buff, sdreph_t *eph)
 
     /* subframe decode counter */
     eph->cnt++;
+	eph->received_mask |= 1;
 }
 /* decode GPS/QZS navigation data (subframe 2) ---------------------------------
 *
@@ -61,11 +63,24 @@ void decode_subfrm2(const uint8_t *buff, sdreph_t *eph)
     eph->eph.fit =getbitu( buff,286, 1);
     eph->eph.A   =sqrtA*sqrtA;
 
-    /* ephemeris update flag */
-    if (oldiode-eph->eph.iode!=0) eph->update=ON; 
+	time_t nowtime;
+	time(&nowtime);
+	/* ephemeris update flag */
+	if ((oldiode - eph->eph.iode) != 0)
+	{
+		eph->update = ON;
+		eph->timestamp_subfrm2 = nowtime;
+	}
+	time_t diff = nowtime - eph->timestamp_subfrm2;
+	if (diff > EPH_SEND_PERIOD_S)
+	{
+		eph->update = ON;
+		eph->timestamp_subfrm2 = nowtime;
+	}
     
     /* subframe counter */
     eph->cnt++;
+	eph->received_mask |= 2;
 }
 /* decode GPS/QZS navigation data (subframe 3) ---------------------------------
 *
@@ -88,11 +103,24 @@ void decode_subfrm3(const uint8_t *buff, sdreph_t *eph)
     eph->eph.iode=getbitu( buff,270, 8);
     eph->eph.idot=getbits( buff,278,14)*P2_43*SC2RAD;
 
-    /* ephemeris update flag */
-    if (oldiode-eph->eph.iode!=0) eph->update=ON; 
+	time_t nowtime;
+	time(&nowtime);
+	/* ephemeris update flag */
+	if ((oldiode - eph->eph.iode) != 0)
+	{
+		eph->update = ON;
+		eph->timestamp_subfrm3 = nowtime;
+	}
+	time_t diff = nowtime - eph->timestamp_subfrm3;
+	if (diff > EPH_SEND_PERIOD_S)
+	{
+		eph->update = ON;
+		eph->timestamp_subfrm3 = nowtime;
+	}
 
     /* subframe counter */
     eph->cnt++;
+	eph->received_mask |= 4;
 }
 /* decode GPS/QZS navigation data (subframe 4) ---------------------------------
 *
@@ -103,6 +131,7 @@ void decode_subfrm3(const uint8_t *buff, sdreph_t *eph)
 void decode_subfrm4(const uint8_t *buff, sdreph_t *eph)
 {
     eph->tow_gpst=getbitu(buff,30,17)*6.0; /* transmission time of subframe */
+	eph->received_mask |= 8;
 }
 /* decode GPS/QZS navigation data (subframe 5) ---------------------------------
 *
@@ -113,6 +142,7 @@ void decode_subfrm4(const uint8_t *buff, sdreph_t *eph)
 void decode_subfrm5(const uint8_t *buff, sdreph_t *eph)
 {
     eph->tow_gpst=getbitu(buff,30,17)*6.0; /* transmission time of subframe */
+	eph->received_mask |=16;
 }
 /* decode navigation data (GPS/QZS L1CA subframe) ------------------------------
 *

@@ -153,7 +153,7 @@ extern "C" {
 #define LOOP_SBAS     2                /* loop interval */
 #define LOOP_LEX      4                /* loop interval */
 		
-#define TRACK_LOST_SUMM	20.0			/* Threshold of I-summ, whele treking loss is detected*/
+#define TRACK_LOST_SUMM	25.0			/* Threshold of I-summ, whele treking loss is detected*/
 #define TRACK_RESTORE_TIME_MS	(10000)
 
 /* navigation parameter */
@@ -276,6 +276,9 @@ extern "C" {
 #define LENSBASMSG    32               /* SBAS message length 150/8 (byte) */
 #define LENSBASNOV    80               /* message length in NovAtel format */
 
+//ephemeris sens deriod in s
+#define EPH_SEND_PERIOD_S	40
+
 /* thread functions */
 #ifdef WIN32
 #define mlock_t       HANDLE
@@ -379,7 +382,7 @@ typedef struct {
 
 /* sdr acquisition struct */
 typedef struct {
-    int intg;            /* number of integration */
+    int intg;            /* number of integration. Static */
     double hband;        /* half band of search frequency (Hz) */
     double step;         /* frequency search step (Hz) */
     int nfreq;           /* number of frequencyes to search, static */
@@ -446,7 +449,7 @@ typedef struct {
     int corrn;           /* number of correlation points. Set in GUI */
     int *corrp;          /* correlation points (sample). Length this array is "corrn". Contains positive numbers. Static.*/
     double *corrx;       /* correlation points (for plotting) - array. Static */
-    int ne,nl;           /* early/late correlation point */
+    int ne,nl;           /* early/late correlation point. Static */
     sdrtrkprm_t prm1;    /* tracking parameter struct */
     sdrtrkprm_t prm2;    /* tracking parameter struct */
 	int track_loss_cnt;
@@ -461,7 +464,7 @@ typedef struct {
     int week_gpst;       /* ephemeris week in GPST */
     int cnt;             /* ephemeris decode counter */
     int cntth;           /* ephemeris decode count threshold */
-    int update;          /* ephemeris update flag */
+    int update;          /* ephemeris update flag, set when new eph. is received */
     int prn;             /* PRN */
     int tk[3],nt,n4,s1cnt; /* temporary variables for decoding GLONASS */
     double toc_gst;      /* temporary variables for decoding Galileo */
@@ -471,6 +474,10 @@ typedef struct {
                          /* temporary variables for decoding BeiDou D2 */
     int toe_bds,f1p3,cucp4,ep5,cicp6,i0p7,OMGdp8,omgp9;
     unsigned int f1p4,cucp5,ep6,cicp7,i0p8,OMGdp9,omgp10;
+
+	uint8_t received_mask;
+	time_t timestamp_subfrm2; /* Timestamp is s, used for periodic sending eph. to another App  */
+	time_t timestamp_subfrm3;
 } sdreph_t;
 
 /* sdr LEX struct */
@@ -493,8 +500,8 @@ typedef struct {
     int ctype;           /* code type */
     int rate;            /* navigation data rate (ms) */
     int flen;            /* frame length (bits) */
-    int addflen;         /* additional frame bits (bits) */
-    int prebits[32];     /* preamble bits */
+    int addflen;         /* additional frame bits (bits). Static*/
+    int prebits[32];     /* preamble bits. Static */
     int prelen;          /* preamble bits length (bits) */
     int bit;             /* current navigation bit */
     int biti;            /* current navigation bit index */

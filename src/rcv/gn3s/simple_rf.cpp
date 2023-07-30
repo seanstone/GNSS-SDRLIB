@@ -158,6 +158,7 @@ void simple_rf_convert_8bit(uint8_t *src_buf, uint8_t *dst_buf)
 	}
 }
 
+//Called from rcvgrabdata(), which is called in startsdr() thread
 /* push data to memory buffer --------------------------------------------------
 * copy data to internal local buffer from front end buffer
 * args   : none

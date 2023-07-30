@@ -53,6 +53,21 @@ int SDR::get_sat_info(int index, char * info)
 			{
 				info += sprintf(info, "Week=%i ", sdrch[index].nav.sdreph.week_gpst);
 			}
+			else if (sdrch[index].nav.flagsyncf)
+			{
+				info += sprintf(info, "Preample found ");
+			}
+
+			//Count bits
+			uint8_t eph_state = sdrch[index].nav.sdreph.received_mask;
+			uint8_t eph_count = 0;
+			for (uint8_t i = 0; i < 5; i++)
+			{
+				if (eph_state & 0x1)
+					eph_count++;
+				eph_state = eph_state >> 1;
+			}
+			info += sprintf(info, "Eph. count=%i ", eph_count);
 		}
 	}
 	

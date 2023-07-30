@@ -177,8 +177,10 @@ extern void startsdr(void) /* call as function */
 
 
     /* data grabber loop */
-    while (!sdrstat.stopflag) {
-        if (rcvgrabdata(&sdrini)<0) {
+    while (!sdrstat.stopflag) 
+	{
+        if (rcvgrabdata(&sdrini) < 0) 
+		{
             sdrstat.stopflag=ON;
             break;
         }
@@ -231,13 +233,22 @@ void restart_acquisition(sdrch_t *sdr)
 	sdr->nav.flagsyncf = 0;
 	sdr->nav.flagtow = 0;
 	sdr->nav.synci = 0;
+	sdr->nav.biti = 0;
 	sdr->nav.swsync = 0;
+	sdr->nav.swloop = 0;
 	sdr->nav.bitIP = 0;
+	sdr->nav.cnt = 0;
+	sdr->nav.flagpol = 0;
+
+	memset(sdr->nav.bitsync, 0, sdr->nav.rate * sizeof(int));
+
 	clearcumsumcorr(&sdr->trk);
 
 	sdr->trk.remcode = 0;
+	sdr->trk.remcarr = 0;
 	sdr->trk.oldremcarr = 0;
 	sdr->trk.oldremcode = 0;
+	sdr->trk.codeNco = 0;
 
 	memset(sdr->trk.oldI, 0, 1 + 2 * sdr->trk.corrn * sizeof(double));
 	memset(sdr->trk.oldQ, 0, 1 + 2 * sdr->trk.corrn * sizeof(double));

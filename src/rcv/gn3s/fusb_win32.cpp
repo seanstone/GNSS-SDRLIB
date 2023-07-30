@@ -232,6 +232,8 @@ fusb_ephandle_win32::write (const void *buffer, int nbytes)
   return retval < 0 ? retval : nbytes;
 }
 
+
+
 int fusb_ephandle_win32::read (void *buffer, int nbytes)
 {
   int retval=0;
@@ -281,6 +283,7 @@ int fusb_ephandle_win32::read (void *buffer, int nbytes)
 
   return retval < 0 ? retval : nbytes;
 }
+
 
 void
 fusb_ephandle_win32::wait_for_completion ()
