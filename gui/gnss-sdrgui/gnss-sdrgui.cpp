@@ -37,6 +37,8 @@ int SDR::get_sat_info(int index, char * info)
 	}
 	else
 	{
+		//Tracking
+
 		info += sprintf(info, " Tracking ");
 		info += sprintf(info, "SNR: %4.1f ", sdrch[index].trk.S[0]);
 		double summ_value = sdrch[index].trk.Isum_fin / 1000.0;
@@ -49,6 +51,8 @@ int SDR::get_sat_info(int index, char * info)
 		}
 		else
 		{
+			//Tracking stable
+
 			if (sdrch[index].nav.flagtow)
 			{
 				info += sprintf(info, "Week=%i ", sdrch[index].nav.sdreph.week_gpst);
@@ -58,16 +62,24 @@ int SDR::get_sat_info(int index, char * info)
 				info += sprintf(info, "Preample found ");
 			}
 
-			//Count bits
-			uint8_t eph_state = sdrch[index].nav.sdreph.received_mask;
-			uint8_t eph_count = 0;
-			for (uint8_t i = 0; i < 5; i++)
+			if (sdrch[index].prn > 100)
 			{
-				if (eph_state & 0x1)
-					eph_count++;
-				eph_state = eph_state >> 1;
+				double err_hz = sdrch[index].trk.carrfreq - sdrch[index].f_if - sdrch[index].foffset;
+				info += sprintf(info, "Freq. err: %i Hz", (int)err_hz);
 			}
-			info += sprintf(info, "Eph. count=%i ", eph_count);
+			else
+			{
+				//Count bits
+				uint8_t eph_state = sdrch[index].nav.sdreph.received_mask;
+				uint8_t eph_count = 0;
+				for (uint8_t i = 0; i < 5; i++)
+				{
+					if (eph_state & 0x1)
+						eph_count++;
+					eph_state = eph_state >> 1;
+				}
+				info += sprintf(info, "Eph. count=%i ", eph_count);
+			}
 		}
 	}
 	
