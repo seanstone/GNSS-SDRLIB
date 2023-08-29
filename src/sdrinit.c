@@ -667,7 +667,7 @@ extern int initsdrch(int chno, int sys, int prn, int ctype, int dtype,
     short *rcode;
 
 	//f_if = f_cf - (sampling_rate_hz * 41.0);
-	SDRPRINTF("IF: %f\n", f_if);
+	//SDRPRINTF("IF: %f\n", f_if);
 
     sdr->no=chno;
     sdr->sys=sys;

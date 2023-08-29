@@ -1,6 +1,8 @@
 using namespace System;
 public ref class SDR
 {
+public: int get_sat_count(System::Void);
+public: int get_sat_info(int index, char *info);
 public: void start(Object^ obj);
 public: void stop(Object^ obj);
 public: void startspectrum(Object^ obj);

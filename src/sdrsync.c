@@ -46,7 +46,10 @@ extern void *syncthread(void * arg)
     }
     sdrout.obsd=(obsd_t *)calloc(MAXSAT,sizeof(obsd_t));
 
-    while (!sdrstat.stopflag) {
+	//***************************************************************************
+
+    while (!sdrstat.stopflag) 
+	{
 
         mlock(hobsmtx);
 
@@ -123,6 +126,8 @@ extern void *syncthread(void * arg)
         sdrout.nsat=nsat;
         sdrobs2obsd(obs,nsat,sdrout.obsd);
 
+		// SEND!
+
         /* rinex obs output */
         if (sdrini.rinex) {
             if (writerinexobs(sdrout.rinexobs,&sdrout.opt,sdrout.obsd,
@@ -135,9 +140,11 @@ extern void *syncthread(void * arg)
             sendrtcmobs(sdrout.obsd,&sdrout.soc_rtcm,sdrout.nsat);
 
         /* navigation data output */
-        for (i=0;i<sdrini.nch;i++) {
+        for (i=0;i<sdrini.nch;i++)
+		{
             if ((sdrch[i].nav.sdreph.update)&&
-                (sdrch[i].nav.sdreph.cnt==sdrch[i].nav.sdreph.cntth)) {
+                (sdrch[i].nav.sdreph.cnt >= sdrch[i].nav.sdreph.cntth)) 
+			{
                 sdrch[i].nav.sdreph.cnt=0;
                 sdrch[i].nav.sdreph.update=OFF;
 

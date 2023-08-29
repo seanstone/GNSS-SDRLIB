@@ -177,8 +177,10 @@ extern void startsdr(void) /* call as function */
 
 
     /* data grabber loop */
-    while (!sdrstat.stopflag) {
-        if (rcvgrabdata(&sdrini)<0) {
+    while (!sdrstat.stopflag) 
+	{
+        if (rcvgrabdata(&sdrini) < 0) 
+		{
             sdrstat.stopflag=ON;
             break;
         }
@@ -220,6 +222,40 @@ extern void quitsdr(sdrini_t *ini, int stop)
     closehandles();
     if (stop==4) return;
 }
+
+void restart_acquisition(sdrch_t *sdr)
+{
+	sdr->trk.track_loss_cnt = 0;
+	sdr->flagacq = 0;
+	sdr->flagacq = 0;
+	sdr->nav.flagdec = 0;
+	sdr->nav.flagsync = 0;
+	sdr->nav.flagsyncf = 0;
+	sdr->nav.flagtow = 0;
+	sdr->nav.synci = 0;
+	sdr->nav.biti = 0;
+	sdr->nav.swsync = 0;
+	sdr->nav.swloop = 0;
+	sdr->nav.bitIP = 0;
+	sdr->nav.cnt = 0;
+	sdr->nav.flagpol = 0;
+
+	memset(sdr->nav.bitsync, 0, sdr->nav.rate * sizeof(int));
+
+	clearcumsumcorr(&sdr->trk);
+
+	sdr->trk.remcode = 0;
+	sdr->trk.remcarr = 0;
+	sdr->trk.oldremcarr = 0;
+	sdr->trk.oldremcode = 0;
+	sdr->trk.codeNco = 0;
+
+	memset(sdr->trk.oldI, 0, 1 + 2 * sdr->trk.corrn * sizeof(double));
+	memset(sdr->trk.oldQ, 0, 1 + 2 * sdr->trk.corrn * sizeof(double));
+
+	sdr->nav.ocodei = 0;
+}
+
 /* sdr channel thread ----------------------------------------------------------
 * sdr channel thread for signal acquisition and tracking . Every sat have its own thread
 * args   : void   *arg      I   sdr channel struct
@@ -309,8 +345,25 @@ extern void *sdrthread(void *arg)
                     mlock(hobsmtx);
 
                     /* calculate observation data */
-                    if (loopcnt%(SNSMOOTHMS/sdr->trk.loopms)==0)
-                        setobsdata(sdr,buffloc,cnt,&sdr->trk,1);
+					if (loopcnt % (SNSMOOTHMS / sdr->trk.loopms) == 0)
+					{
+						setobsdata(sdr, buffloc, cnt, &sdr->trk, 1);
+						//Detect track loss
+						double summ_value = sdr->trk.Isum_fin / 1000.0;
+						if (summ_value < TRACK_LOST_SUMM)
+						{
+							sdr->trk.track_loss_cnt++;
+							if (sdr->trk.track_loss_cnt > 
+								(TRACK_RESTORE_TIME_MS / SNSMOOTHMS))
+							{
+								restart_acquisition(sdr);
+							}
+						}
+						else
+						{
+							sdr->trk.track_loss_cnt = 0;
+						}
+					}
                     else
                         setobsdata(sdr,buffloc,cnt,&sdr->trk,0);
 
