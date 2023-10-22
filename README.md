@@ -24,9 +24,9 @@ This fork have such changes:
  * Added displaying number of tracking processing cycles in one second.
  
 GUI interface after start:  
-<img src="https://github.com/iliasam/GNSS-SDRLIB/blob/main/Images/p1.png">  
+<img src="https://github.com/iliasam/GNSS-SDRLIB/blob/master/Images/p1.png">  
   
   
 Spectrum:  
-<img src="https://github.com/iliasam/GNSS-SDRLIB/blob/main/Images/p2.png">  
+<img src="https://github.com/iliasam/GNSS-SDRLIB/blob/master/Images/p2.png">  
 
