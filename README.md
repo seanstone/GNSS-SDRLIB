@@ -1,5 +1,6 @@
 GNSS-SDRLIB
-===============================================================================
+===============================================================================  
+
 An Open Source GNSS Software Defined Radio Library
 
 This is a fork of "GNSS-SDRLIB", original is here: https://github.com/taroz/GNSS-SDRLIB  
@@ -9,7 +10,8 @@ Taro Suzuki
 E-Mail: <gnsssdrlib@gmail.com>
 HP: <http://www.taroz.net>
 
-===============================================================================
+===============================================================================  
+
 This fork have such changes:  
  * Ported to VS 2017
  * Removed STEREO receiver support
@@ -26,5 +28,5 @@ GUI interface after start:
   
   
 Spectrum:  
-<img src="https://github.com/iliasam/GNSS-SDRLIB/blob/main/Images/2.png">  
+<img src="https://github.com/iliasam/GNSS-SDRLIB/blob/main/Images/.png">  
 
