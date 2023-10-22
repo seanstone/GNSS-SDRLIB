@@ -34,11 +34,25 @@ void decode_word1(const uint8_t *buff, sdreph_t *eph)
     /* compute time of ephemeris */
     if (eph->week_gst!=0) eph->eph.toe=gst2time(eph->week_gst,eph->eph.toes);
 
-    /* ephemeris update flag */
-    if (oldiodc-eph->eph.iodc!=0) eph->update=ON; 
+
+	time_t nowtime;
+	time(&nowtime);
+	/* ephemeris update flag */
+	if ((oldiodc - eph->eph.iodc) != 0)
+	{
+		eph->update = ON;
+		eph->timestamp_subfrm1 = nowtime;
+	}
+	time_t diff = nowtime - eph->timestamp_subfrm1;
+	if (diff > EPH_SEND_PERIOD_S)
+	{
+		eph->update = ON;
+		eph->timestamp_subfrm1 = nowtime;
+	}
 
     /* ephemeris counter */
     eph->cnt++;
+	eph->received_mask |= 1;
 }
 /* decode Galileo navigation data (I/NAV word 2) -------------------------------
 *
@@ -57,11 +71,25 @@ void decode_word2(const uint8_t *buff, sdreph_t *eph)
     eph->eph.idot  =getbits(buff,OFFSET2+ 0,14)*P2_43*SC2RAD;
     eph->eph.iode  =eph->eph.iodc;
 
-    /* ephemeris update flag */
-    if (oldiodc-eph->eph.iodc!=0) eph->update=ON;
+
+	time_t nowtime;
+	time(&nowtime);
+	/* ephemeris update flag */
+	if ((oldiodc - eph->eph.iodc) != 0)
+	{
+		eph->update = ON;
+		eph->timestamp_subfrm2 = nowtime;
+	}
+	time_t diff = nowtime - eph->timestamp_subfrm2;
+	if (diff > EPH_SEND_PERIOD_S)
+	{
+		eph->update = ON;
+		eph->timestamp_subfrm2 = nowtime;
+	}
 
     /* ephemeris counter */
     eph->cnt++;
+	eph->received_mask |= 2;
 }
 /* decode Galileo navigation data (I/NAV word 3) -------------------------------
 *
@@ -83,11 +111,24 @@ void decode_word3(const uint8_t *buff, sdreph_t *eph)
     eph->eph.sva   =0; /*getbitu( buff,OFFSET2+  8,8); (undefined) */
     eph->eph.iode  =eph->eph.iodc;
 
-    /* ephemeris update flag */
-    if (oldiodc-eph->eph.iodc!=0) eph->update=ON;
+	time_t nowtime;
+	time(&nowtime);
+	/* ephemeris update flag */
+	if ((oldiodc - eph->eph.iodc) != 0)
+	{
+		eph->update = ON;
+		eph->timestamp_subfrm3 = nowtime;
+	}
+	time_t diff = nowtime - eph->timestamp_subfrm3;
+	if (diff > EPH_SEND_PERIOD_S)
+	{
+		eph->update = ON;
+		eph->timestamp_subfrm3 = nowtime;
+	}
 
     /* ephemeris counter */
     eph->cnt++;
+	eph->received_mask |= 4;
 }
 /* decode Galileo navigation data (I/NAV word 4) -------------------------------
 *
@@ -111,11 +152,24 @@ void decode_word4(const uint8_t *buff, sdreph_t *eph)
     /* compute time of clock */
     if (eph->week_gst!=0) eph->eph.toc=gst2time(eph->week_gst,eph->toc_gst);
 
-    /* ephemeris update flag */
-    if (oldiodc-eph->eph.iodc!=0) eph->update=ON;
+	time_t nowtime;
+	time(&nowtime);
+	/* ephemeris update flag */
+	if ((oldiodc - eph->eph.iodc) != 0)
+	{
+		eph->update = ON;
+		eph->timestamp_subfrm4 = nowtime;
+	}
+	time_t diff = nowtime - eph->timestamp_subfrm4;
+	if (diff > EPH_SEND_PERIOD_S)
+	{
+		eph->update = ON;
+		eph->timestamp_subfrm4 = nowtime;
+	}
 
     /* subframe counter */
     eph->cnt++;
+	eph->received_mask |= 8;
 }
 /* decode Galileo navigation data (I/NAV word 5) -------------------------------
 *
@@ -151,6 +205,7 @@ void decode_word5(const uint8_t *buff, sdreph_t *eph)
 
     /* ephemeris counter */
     eph->cnt++;
+	eph->received_mask |= 16;
 }
 /* decode Galileo navigation data (I/NAV word 6) -------------------------------
 *

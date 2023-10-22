@@ -141,7 +141,7 @@ extern "C" {
 #define ACQINTG_SBAS  4               /* number of non-coherent integration */
 #define ACQHBAND      7000             /* half width for doppler search (Hz) */
 #define ACQSTEP       100              /* doppler search frequency step (Hz) */
-#define ACQTH         2.1              /* acquisition threshold (peak ratio) */
+#define ACQTH         1.8              /* acquisition threshold (peak ratio) */
 #define ACQSLEEP      2000             /* acquisition process interval (ms) */
 
 /* tracking setting */
@@ -355,6 +355,8 @@ typedef struct {
     double trkpllb[2];   /* pll noise bandwidth (Hz) */
     double trkfllb[2];   /* fll noise bandwidth (Hz) */
     int rtlsdrppmerr;    /* clock collection for RTL-SDR */
+	int use_restore_acq; /* Restore acqusition */
+	int dispay_track_cycles; /* Display tracking cycles at Monitor page */
 } sdrini_t;
 
 /* sdr current state struct */
@@ -452,7 +454,8 @@ typedef struct {
     int ne,nl;           /* early/late correlation point. Static */
     sdrtrkprm_t prm1;    /* tracking parameter struct */
     sdrtrkprm_t prm2;    /* tracking parameter struct */
-	int track_loss_cnt;
+	int track_loss_cnt;  
+	uint64_t track_cnt;  /* Counter of tracked GNSS codes*/
 } sdrtrk_t;
 
 /* sdr ephemeris struct */
@@ -476,8 +479,11 @@ typedef struct {
     unsigned int f1p4,cucp5,ep6,cicp7,i0p8,OMGdp9,omgp10;
 
 	uint8_t received_mask;
+	time_t timestamp_subfrm1;
 	time_t timestamp_subfrm2; /* Timestamp is s, used for periodic sending eph. to another App  */
 	time_t timestamp_subfrm3;
+	time_t timestamp_subfrm4;
+	time_t timestamp_subfrm5;
 } sdreph_t;
 
 /* sdr LEX struct */
@@ -498,7 +504,7 @@ typedef struct {
 typedef struct {
     FILE *fpnav;         /* for navigation bit logging */
     int ctype;           /* code type */
-    int rate;            /* navigation data rate (ms) */
+    int rate;            /* navigation data rate (length (multiples of ranging code) ) */
     int flen;            /* frame length (bits) */
     int addflen;         /* additional frame bits (bits). Static*/
     int prebits[32];     /* preamble bits. Static */

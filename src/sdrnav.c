@@ -259,11 +259,11 @@ extern int checkbit(double IP, int loopms, sdrnav_t *nav)
     nav->swsync=OFF;
 
     /* if synchronization is started */
-    if (diffi==1||diffi==-nav->rate+1) 
+    if (diffi==1 || diffi == -nav->rate+1) 
 	{
-        nav->bitIP=IP; /* reset */
-        nav->swreset=ON;
-        nav->cnt=1;
+        nav->bitIP = IP; /* reset */
+        nav->swreset = ON;
+        nav->cnt = 1;
     } 
     /* after synchronization */
     else 
@@ -277,6 +277,13 @@ extern int checkbit(double IP, int loopms, sdrnav_t *nav)
     if (nav->cnt%loopms==0) 
 		nav->swloop=ON;
     else nav->swloop=OFF;
+
+	if (nav->ctype == CTYPE_E1B)
+	{
+		nav->bitIP = IP;
+		diffi = 0;
+		nav->swloop = ON;
+	}
 
     /* if synchronization is finished */
     if (diffi == 0) 

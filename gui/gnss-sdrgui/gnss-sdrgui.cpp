@@ -80,6 +80,9 @@ int SDR::get_sat_info(int index, char * info)
 				}
 				info += sprintf(info, "Eph. count=%i ", eph_count);
 			}
+
+			int track_time_s = sdrch[index].trk.track_cnt / 1000;//i'm not sure if it is correct for non GPS
+			info += sprintf(info, "Trk. time=%i s ", track_time_s);
 		}
 	}
 	
@@ -199,6 +202,13 @@ System::Void SDR::start(System::Object^ obj)
 	setsdrini(form->chk_E22->Checked,22,SYS_GAL,form->rb_E_FE2->Checked,form->chk_TYPE_E1B->Checked, false, false, &sdrini);
 	setsdrini(form->chk_E25->Checked, 25, SYS_GAL, form->rb_E_FE2->Checked, form->chk_TYPE_E1B->Checked, false, false, &sdrini);
 	setsdrini(form->chk_E27->Checked, 27, SYS_GAL, form->rb_E_FE2->Checked, form->chk_TYPE_E1B->Checked, false, false, &sdrini);
+	setsdrini(form->chk_E14->Checked, 14, SYS_GAL, form->rb_E_FE2->Checked, form->chk_TYPE_E1B->Checked, false, false, &sdrini);
+	setsdrini(form->chk_E30->Checked, 30, SYS_GAL, form->rb_E_FE2->Checked, form->chk_TYPE_E1B->Checked, false, false, &sdrini);
+	setsdrini(form->chk_E2->Checked, 2, SYS_GAL, form->rb_E_FE2->Checked, form->chk_TYPE_E1B->Checked, false, false, &sdrini);
+	setsdrini(form->chk_E4->Checked, 4, SYS_GAL, form->rb_E_FE2->Checked, form->chk_TYPE_E1B->Checked, false, false, &sdrini);
+	setsdrini(form->chk_E21->Checked, 21, SYS_GAL, form->rb_E_FE2->Checked, form->chk_TYPE_E1B->Checked, false, false, &sdrini);
+	setsdrini(form->chk_E9->Checked, 9, SYS_GAL, form->rb_E_FE2->Checked, form->chk_TYPE_E1B->Checked, false, false, &sdrini);
+	setsdrini(form->chk_E7->Checked, 7, SYS_GAL, form->rb_E_FE2->Checked, form->chk_TYPE_E1B->Checked, false, false, &sdrini);
 
     /* channel setting */ /* BeiDou */
     setsdrini(form->chk_C01->Checked, 1,SYS_CMP,form->rb_C_FE2->Checked,form->chk_TYPE_B1I->Checked,false,false,&sdrini);
@@ -260,6 +270,8 @@ System::Void SDR::start(System::Object^ obj)
     sdrini.lex=(int)form->chk_lex->Checked;
     sdrini.sbas=(int)form->chk_saif->Checked;
     sdrini.log=(int)form->chk_log->Checked;
+	sdrini.use_restore_acq = (int)form->chk_RestoreAcq->Checked;
+	sdrini.dispay_track_cycles = (int)form->chk_DispTrackCycles->Checked;
     sprintf(sdrini.rinexpath,"%s",form->tb_rinex_dir->Text);
     if (form->tb_rtcm_port->Text!="") sdrini.rtcmport=Convert::ToInt32(form->tb_rtcm_port->Text);
     if (form->tb_lex_port->Text!="") sdrini.lexport=Convert::ToInt32(form->tb_lex_port->Text);

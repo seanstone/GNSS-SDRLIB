@@ -1060,7 +1060,7 @@ extern double mixcarr(const char *data, int dtype, double ti, int n,
 *		   int    ns        I   number of corellation points
 *          double carr_freq  I   local carrier frequency (Hz)
 *          double phi0      I   carrier initial phase (rad)
-*          double crate     I   code chip rate (chip/s)
+*          double crate     I   code chip rate (chip/s) (trk.codefreq)
 *          double coff      I   code chip offset (chip)
 *          int    *sample   I   correlator points (sample)
 *          short  *I,*Q     O   correlation power I,Q

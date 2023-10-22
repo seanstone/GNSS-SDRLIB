@@ -348,15 +348,16 @@ extern void *sdrthread(void *arg)
 					if (loopcnt % (SNSMOOTHMS / sdr->trk.loopms) == 0)
 					{
 						setobsdata(sdr, buffloc, cnt, &sdr->trk, 1);
-						//Detect track loss
+						//Detect tracking loss
 						double summ_value = sdr->trk.Isum_fin / 1000.0;
 						if (summ_value < TRACK_LOST_SUMM)
 						{
 							sdr->trk.track_loss_cnt++;
-							if (sdr->trk.track_loss_cnt > 
-								(TRACK_RESTORE_TIME_MS / SNSMOOTHMS))
+							if ((sdr->trk.track_loss_cnt > 
+								(TRACK_RESTORE_TIME_MS / SNSMOOTHMS)) && (sdrini.use_restore_acq != 0))
 							{
 								restart_acquisition(sdr);
+								cnt = 0;
 							}
 						}
 						else
@@ -389,7 +390,8 @@ extern void *sdrthread(void *arg)
                 if (sdr->no==1 && (cnt%(1000*10)==0)) //10s when cnt is in ms
                     SDRPRINTF("Tracking process %d sec...\n",(int)cnt/(1000));
 				
-				if (sdr->no == 1)
+				// Display Tracking cycles diff.
+				if ((sdr->no == 1) && (sdrini.dispay_track_cycles != 0))
 				{
 					high_resolution_clock::time_point t1 = high_resolution_clock::now();
 					auto nanosec = t1.time_since_epoch();
@@ -399,7 +401,7 @@ extern void *sdrthread(void *arg)
 					if (pvev_seconds != sec)
 					{
 						int diff = cnt - prev_cnt;
-						SDRPRINTF("Tracking cnt diff: %li\n", (int)diff);
+						SDRPRINTF("Tracking cycles diff: %li\n", (int)diff);
 						pvev_seconds = sec;
 						prev_cnt = cnt;
 					}
@@ -417,6 +419,7 @@ extern void *sdrthread(void *arg)
                 if (sdr->trk.flagloopfilter) 
 					clearcumsumcorr(&sdr->trk);
                 cnt++;
+				sdr->trk.track_cnt = cnt;
                 buffloc+=sdr->currnsamp;
             }
         }

@@ -158,35 +158,126 @@ void simple_rf_convert_8bit(uint8_t *src_buf, uint8_t *dst_buf)
 	}
 }
 
+UINT64 simple_rf_test_rx_cnt = 0;
+int simple_rf_test_marker_err_cnt = 0;
+
+uint32_t simple_rf_check_markers(uint8_t *data, int length)
+{
+	static uint8_t state_cnt = 0;
+	static uint8_t expected_byte = 0xAA;
+	const uint8_t expected_table[4] = { 0xAA, 0xBB, 0xCC, 0xDD };
+	static UINT64 simple_rf_prev_marker = 0;
+	static uint8_t prev_packet_id = 0;
+
+	uint32_t total_diff = 0;
+
+
+	uint8_t curr_byte;
+	for (int i = 0; i < length; i++)
+	{
+		curr_byte = data[i];
+		simple_rf_test_rx_cnt++;
+
+		if (curr_byte == expected_byte)
+		{
+			state_cnt++;
+			expected_byte = expected_table[state_cnt];
+			uint8_t packet_id = data[i + 1];
+			if (state_cnt >= 4)
+			{
+				state_cnt = 0;
+				expected_byte = 0xAA;
+				UINT64 length_diff = simple_rf_test_rx_cnt - simple_rf_prev_marker;
+				simple_rf_prev_marker = simple_rf_test_rx_cnt;
+				if (length_diff != 10000)
+				{
+					simple_rf_test_marker_err_cnt++;
+					char textBuf[100];
+					sprintf(textBuf, "ERROR: %llu | %d | %d", length_diff, prev_packet_id, packet_id);
+					String^ clistr = gcnew String(textBuf);
+					System::Diagnostics::Debug::WriteLine(clistr);
+					//System::Diagnostics::Debug::WriteLine("MARKER ERROR\n");
+
+					uint8_t diff_packet = packet_id - prev_packet_id;
+					if (diff_packet != 1)
+					{
+						System::Diagnostics::Debug::WriteLine(">>>BIG ERR");
+					}
+
+					if ((length_diff < 6000) || (length_diff > 13000))
+					{
+						UINT64 countM = simple_rf_test_rx_cnt / (1024 * 1024);
+						sprintf(textBuf, "COUNT: %llu\n", countM);
+						clistr = gcnew String(textBuf);
+						System::Diagnostics::Debug::WriteLine(clistr);
+					}
+
+					if ((length_diff < 10000) && (diff_packet == 1))
+						total_diff += (10000 - length_diff);
+
+					//MessageBeep(MB_ICONEXCLAMATION);
+				}
+				prev_packet_id = packet_id;
+			}
+		}
+		else
+		{
+			if (curr_byte == 0xAA)
+			{
+				state_cnt = 1;
+				expected_byte = 0xBB;
+			}
+			else
+			{
+				state_cnt = 0;
+				expected_byte = 0xAA;
+			}
+		}
+	}
+	return total_diff;
+}
+
+
+
 //Called from rcvgrabdata(), which is called in startsdr() thread
 /* push data to memory buffer --------------------------------------------------
 * copy data to internal local buffer from front end buffer
 * args   : none
 * return : none
 *-----------------------------------------------------------------------------*/
-extern int simple_rf_pushtomembuf(void) 
+extern int simple_rf_pushtomembuf(void)
 {
-    bool b_overrun=false;
-    int nbuff;
+	bool b_overrun = false;
+	static uint32_t prev_diff_bytes = 0;
 
 	//One USB byte is 4 ADC samples
-	uint8_t tmp_usb_buf[SIMPLE_RF_BUFFSIZE / 4];
+	uint8_t tmp_usb_buf[SIMPLE_RF_BUFFSIZE / 4 ];
+	uint8_t *read_ptr = tmp_usb_buf;
 	uint8_t extracted_buf[SIMPLE_RF_BUFFSIZE];
 
-    
-	nbuff = fx2_d2.read_IF_simple(tmp_usb_buf, SIMPLE_RF_BUFFSIZE / 4);
-	nbuff = nbuff * 4;
-	if (nbuff == simple_rf_read_buf_size)
+
+	int bytes_to_read = SIMPLE_RF_BUFFSIZE / 4;
+	if (prev_diff_bytes > 0)
+	{
+		bytes_to_read -= prev_diff_bytes;
+		read_ptr += prev_diff_bytes;
+	}
+	int read_bytes = fx2_d2.read_IF_simple(read_ptr, bytes_to_read);
+
+	
+	uint32_t diff_bytes = simple_rf_check_markers(tmp_usb_buf, SIMPLE_RF_BUFFSIZE / 4);
+	prev_diff_bytes = diff_bytes;
+
+	if (read_bytes == bytes_to_read)
 	{
 		simple_rf_convert_8bit(tmp_usb_buf, extracted_buf);
 		mlock(hbuffmtx);
 		uint8_t *dst_p = &sdrstat.buff[(sdrstat.buffcnt % MEMBUFFLEN) * simple_rf_read_buf_size];
-		//simple_rf_convert_8bit(tmp_usb_buf, dst_p);
 		memcpy(dst_p, extracted_buf, SIMPLE_RF_BUFFSIZE);
 		unmlock(hbuffmtx);
 	}
     
-    if (nbuff!= simple_rf_read_buf_size) 
+    if (read_bytes != bytes_to_read)
 	{
         SDRPRINTF("Simple frontend read IF error...\n");
     }

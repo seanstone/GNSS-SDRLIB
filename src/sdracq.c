@@ -48,7 +48,6 @@ extern uint64_t sdraccuisition(sdrch_t *sdr, double *power)
 
 	sdr->acq.peakr_max_fin = sdr->acq.peakr_max;
 
-
     /* display acquisition results */
     SDRPRINTF("%s, C/N0=%4.1f, peak=%3.1f, codei=%5d, freq=%8.1f\n",
         sdr->satstr,sdr->acq.cn0,sdr->acq.peakr,sdr->acq.acqcodei,

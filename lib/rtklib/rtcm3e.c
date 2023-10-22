@@ -992,7 +992,8 @@ static int encode_type1045(rtcm_t *rtcm, int sync)
     if (satsys(rtcm->ephsat,&prn)!=SYS_GAL) return 0;
     eph=rtcm->nav.eph+rtcm->ephsat-1;
     if (eph->sat!=rtcm->ephsat) return 0;
-    week=eph->week%4092;
+    //week=eph->week%4092;
+	week = (eph->week - 1024) % 4096; /* gst-week = gal-week - 1024 */
     toe  =ROUND(eph->toes/60.0);
     toc  =ROUND(time2gpst(eph->toc,NULL)/60.0);
     sqrtA=ROUND_U(sqrt(eph->A)/P2_19);
