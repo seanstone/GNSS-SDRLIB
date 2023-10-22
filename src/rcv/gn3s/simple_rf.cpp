@@ -13,6 +13,13 @@ Fx2_dev fx2_d2;
 uint32_t simple_rf_read_buf_size = 0;
 const int FirmwareConfigAddr = 0x1003;
 
+UINT64 simple_rf_test_rx_cnt = 0;
+int simple_rf_test_marker_err_cnt = 0;
+UINT64  simple_rf_marker_counter = 0;
+
+//--------------------------------------------------------------------------
+
+//Called to configure FX2LP
 static void pre_reset_callback(usb_dev_handle *device)
 {
 	uint8_t firmware_config[6] = {18, 67, 224, 12, 16, 0};
@@ -34,9 +41,8 @@ static void pre_reset_callback(usb_dev_handle *device)
 extern int simple_rf_init(void) 
 {
     unsigned char uc_flags[5];
-
 	char firmware_path[500] = {0};
-	//char *firmware_path = ".\\frontend\\fx2pipe.ihx";
+	simple_rf_marker_counter = 0;
 
 #ifdef WIN32
 	char drive[_MAX_DRIVE];
@@ -158,19 +164,21 @@ void simple_rf_convert_8bit(uint8_t *src_buf, uint8_t *dst_buf)
 	}
 }
 
-UINT64 simple_rf_test_rx_cnt = 0;
-int simple_rf_test_marker_err_cnt = 0;
 
+
+// Check presence markers from FPGA in received bytes
+// Return diffenence in bytes, 0 if there is no difference (no loss in steream)
+// This is needed to check data loss in USB stream
 uint32_t simple_rf_check_markers(uint8_t *data, int length)
 {
 	static uint8_t state_cnt = 0;
 	static uint8_t expected_byte = 0xAA;
-	const uint8_t expected_table[4] = { 0xAA, 0xBB, 0xCC, 0xDD };
+	const uint8_t expected_table[4] = { 0xAA, 0xBB, 0xCC, 0xDD }; //Marker is 5 bytes, repeated every 10000 bytes. Fifth byte is marker ID
 	static UINT64 simple_rf_prev_marker = 0;
 	static uint8_t prev_packet_id = 0;
 
+	//Error bytes counter
 	uint32_t total_diff = 0;
-
 
 	uint8_t curr_byte;
 	for (int i = 0; i < length; i++)
@@ -182,15 +190,23 @@ uint32_t simple_rf_check_markers(uint8_t *data, int length)
 		{
 			state_cnt++;
 			expected_byte = expected_table[state_cnt];
-			uint8_t packet_id = data[i + 1];
 			if (state_cnt >= 4)
 			{
+				uint8_t packet_id = 0;
+				if ((i + 1) >= length)
+					packet_id = 0;//not possible to read
+				else
+					packet_id = data[i + 1];
+
 				state_cnt = 0;
 				expected_byte = 0xAA;
+				simple_rf_marker_counter++;
 				UINT64 length_diff = simple_rf_test_rx_cnt - simple_rf_prev_marker;
 				simple_rf_prev_marker = simple_rf_test_rx_cnt;
-				if (length_diff != 10000)
+
+				if ((length_diff != 10000) && (simple_rf_marker_counter > 5))
 				{
+					//error, data loss
 					simple_rf_test_marker_err_cnt++;
 					char textBuf[100];
 					sprintf(textBuf, "ERROR: %llu | %d | %d", length_diff, prev_packet_id, packet_id);
@@ -206,8 +222,8 @@ uint32_t simple_rf_check_markers(uint8_t *data, int length)
 
 					if ((length_diff < 6000) || (length_diff > 13000))
 					{
-						UINT64 countM = simple_rf_test_rx_cnt / (1024 * 1024);
-						sprintf(textBuf, "COUNT: %llu\n", countM);
+						UINT64 countM = simple_rf_test_rx_cnt / (1024 * 1024); //value in MB
+						sprintf(textBuf, "COUNT: %llu M\n", countM);
 						clistr = gcnew String(textBuf);
 						System::Diagnostics::Debug::WriteLine(clistr);
 					}
@@ -304,7 +320,7 @@ extern void simple_rf_file_pushtomembuf(void)
 
     unmlock(hbuffmtx);
 
-    if (nread< simple_rf_read_buf_size) 
+    if (nread < simple_rf_read_buf_size) 
 	{
         sdrstat.stopflag=ON;
         SDRPRINTF("end of file!\n");

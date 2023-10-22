@@ -71,6 +71,8 @@
  * Copyright © 2012 Pete Batard (pete@akeo.ie)
  * Copyright © 2013 Federico Manzan (f.manzan@gmail.com)
 
+ *  Also part of Cannelloni/fx2pipe code https://github.com/jhol/cannelloni was added here by iliasam in 2023
+
  */
 #include "sdr.h"
 #include "fx2.h"

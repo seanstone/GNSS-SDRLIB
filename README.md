@@ -10,7 +10,7 @@ Taro Suzuki
 E-Mail: <gnsssdrlib@gmail.com>
 HP: <http://www.taroz.net>
 
-===============================================================================  
+===========================================================   
 
 This fork have such changes:  
  * Ported to VS 2017
@@ -28,5 +28,5 @@ GUI interface after start:
   
   
 Spectrum:  
-<img src="https://github.com/iliasam/GNSS-SDRLIB/blob/main/Images/.png">  
+<img src="https://github.com/iliasam/GNSS-SDRLIB/blob/main/Images/p2.png">  
 
