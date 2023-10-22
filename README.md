@@ -12,7 +12,7 @@ HP: <http://www.taroz.net>
 
 ===========================================================   
 
-This fork have such changes:  
+This fork has such changes:  
  * Ported to VS 2017
  * Removed STEREO receiver support
  * Added "Simple 8B" receiver support (FX2LP based)
