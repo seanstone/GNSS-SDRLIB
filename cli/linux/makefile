@@ -41,9 +41,9 @@ CFLAGS=-Wall -O3 -march=native $(INCLUDE) $(OPTIONS) -g
 LDLIBS=-lm -lrt -lfftw3f -lfftw3f_threads -lpthread $(LIBS) -lusb-1.0
 
 BIN= gnss-sdrcli
-$(BIN): $(OBS)
-	 $(CXX) -o $(BIN) $(OBS) $(CFLAGS) $(LDLIBS)
-	 @cp $(BIN) ../../bin
+../../bin/$(BIN): $(OBS)
+	mkdir -p $(@D)
+	 $(CXX) $(OBS) $(CFLAGS) $(LDLIBS) -o $@
 
 .PHONY: libfec
 libfec: ../../third-party/libfec/build/libfec.a

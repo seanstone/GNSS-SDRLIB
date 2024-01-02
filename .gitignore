@@ -15,6 +15,7 @@ build/
 bld/
 [Oo]bj/
 *.o
+/bin/
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
