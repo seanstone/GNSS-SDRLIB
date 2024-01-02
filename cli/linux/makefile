@@ -10,21 +10,20 @@ USE_BLADERF=0
 SRC=../../src
 RTKLIB=../../lib/rtklib
 FEC=../../lib/fec
-STEREO=../../src/rcv/stereo
 RTLSDR=../../src/rcv/rtlsdr
 BLADERF=../../src/rcv/bladerf
 
-INCLUDE=-I$(SRC) -I$(RTKLIB) -I$(FEC) -I$(STEREO) -I$(RTLSDR) -I$(BLADERF)
+INCLUDE=-I$(SRC) -I$(RTKLIB) -I$(FEC) -I$(RTLSDR) -I$(BLADERF)
 
 CC=gcc
-OPTIONS=-DSSE2_ENABLE -DFFTMTX -DSTEREO -DSTEREOV26
+OPTIONS=-DSSE2_ENABLE -DFFTMTX
 
-LIBS=$(STEREO)/linux/libnslstereo.a $(FEC)/linux/libfec.a
+LIBS=$(FEC)/linux/libfec.a
 
 OBS= sdrmain.o sdrcmn.o sdracq.o sdrcode.o sdrinit.o sdrnav.o\
      sdrnav_gps.o sdrnav_glo.o sdrnav_gal.o sdrnav_bds.o sdrnav_sbs.o\
      sdrout.o sdrplot.o sdrrcv.o sdrspec.o sdrtrk.o sdrlex.o\
-     sdrsync.o stereo.o rtkcmn.o rtcm.o rtcm2.o rtcm3.o rtcm3e.o rinex.o
+     sdrsync.o rtkcmn.o rtcm.o rtcm2.o rtcm3.o rtcm3e.o rinex.o
 
 ifeq ($(USE_RTLSDR),1)
 OPTIONS+=-DRTLSDR
@@ -94,8 +93,6 @@ rtcm3e.o   : $(RTKLIB)/rtcm3e.c
 	$(CC) -c $(CFLAGS) $(RTKLIB)/rtcm3e.c
 rinex.o    : $(RTKLIB)/rinex.c
 	$(CC) -c $(CFLAGS) $(RTKLIB)/rinex.c
-stereo.o : $(STEREO)/stereo.c
-	$(CC) -c $(CFLAGS) $(STEREO)/stereo.c
 rtlsdr.o : $(RTLSDR)/rtlsdr.c
 	$(CC) -c $(CFLAGS) $(RTLSDR)/rtlsdr.c
 convenience.o : $(RTLSDR)/convenience.c
@@ -127,7 +124,6 @@ rtcm2.o : $(SRC)/sdr.h
 rtcm3.o : $(SRC)/sdr.h
 rtcm3e.o: $(SRC)/sdr.h
 rinex.o : $(SRC)/sdr.h
-stereo.o : $(SRC)/sdr.h
 rtlsdr.o : $(SRC)/sdr.h
 convenience.o : $(SRC)/sdr.h
 bladerf.o : $(SRC)/sdr.h
