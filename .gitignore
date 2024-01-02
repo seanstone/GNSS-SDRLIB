@@ -222,3 +222,5 @@ $RECYCLE.BIN/
 
 *.zip
 *.dat
+*.bin
+/gn3sv3_l1/
