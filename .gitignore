@@ -14,6 +14,7 @@ x64/
 build/
 bld/
 [Oo]bj/
+*.o
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
