@@ -6,6 +6,7 @@
 #include "sdr.h"
 #include <chrono>
 #include <time.h>
+#include <locale.h>
 
 /* global variables ----------------------------------------------------------*/
 #ifdef GUI

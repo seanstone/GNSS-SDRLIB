@@ -42,11 +42,11 @@ LDLIBS=-lm -lrt -lfftw3f -lfftw3f_threads -lpthread $(LIBS) -lusb-1.0
 
 BIN= gnss-sdrcli
 $(BIN): $(OBS)
-	 $(CC) -o $(BIN) $(OBS) $(CFLAGS) $(LDLIBS)
+	 $(CXX) -o $(BIN) $(OBS) $(CFLAGS) $(LDLIBS)
 	 @cp $(BIN) ../../bin
 
-sdrmain.o: $(SRC)/sdrmain.c
-	$(CC) -c $(CFLAGS) $(SRC)/sdrmain.c
+sdrmain.o: $(SRC)/sdrmain.cpp
+	$(CXX) -c $(CFLAGS) $(SRC)/sdrmain.cpp
 sdrcmn.o : $(SRC)/sdrcmn.c
 	$(CC) -c $(CFLAGS) $(SRC)/sdrcmn.c
 sdracq.o : $(SRC)/sdracq.c

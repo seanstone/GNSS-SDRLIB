@@ -90,6 +90,7 @@ using namespace gnsssdrgui;
 #include "libusb-1.0/libusb.h"
 #ifdef GN3S
 #include "gn3s.h"
+#include "gn3s/simple_rf.h"
 #endif
 #ifdef BLADERF
 #include "libbladeRF.h"

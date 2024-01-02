@@ -160,7 +160,7 @@ extern int rcvinit(sdrini_t *ini)
 		SDRPRINTF("Data is taken from file, reading is not real-time\n");
         break;
 #endif
-
+#ifdef GN3S
 	case FEND_SIMPLE8B:
 		if (simple_rf_init() < 0) 
 			return -1;
@@ -179,7 +179,7 @@ extern int rcvinit(sdrini_t *ini)
 			return -1;
 		}
 		break;
-
+#endif
     /* File */
     case FEND_FILE:
         /* IF file open (FILE1) */
@@ -247,9 +247,11 @@ extern int rcvquit(sdrini_t *ini)
         rtlsdr_quit();
         break;
 #endif
+#ifdef GN3S
 	case FEND_SIMPLE8B:
 		simple_rf_quit();
 		break;
+#endif
     /* Front End Binary File */
     case FEND_FGN3SV2:
     case FEND_FGN3SV3:
@@ -298,12 +300,14 @@ extern int rcvgrabdata(sdrini_t *ini)
         sleepms(5);
         break;
 #endif
+#ifdef GN3S
 	case FEND_SIMPLE8B:
 		if (simple_rf_pushtomembuf() < 0) {
 			SDRPRINTF("error: Simple Frontend Buffer overrun...\n");
 			return -1;
 		}
 		break;
+#endif
 #ifdef BLADERF
     /* Nuand BladeRF */
     case FEND_BLADERF:
@@ -373,10 +377,10 @@ extern int rcvgetbuff(sdrini_t *ini, uint64_t buffloc, int n, int ftype,
     case FEND_FGN3SV3: 
         fgn3s_getbuff(buffloc,n,dtype,expbuf);
         break;
-#endif
 	case FEND_SIMPLE8B:
 		simple_rf_getbuf(buffloc, n, dtype, expbuf);
 		break;
+#endif
 #ifdef BLADERF
     /* Nuand BladeRF */
     case FEND_BLADERF:
