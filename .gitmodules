@@ -1,0 +1,3 @@
+[submodule "third-party/libfec"]
+	path = third-party/libfec
+	url = https://github.com/quiet/libfec.git

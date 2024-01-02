@@ -18,7 +18,7 @@ INCLUDE=-I$(SRC) -I$(RTKLIB) -I$(FEC) -I$(RTLSDR) -I$(BLADERF)
 CC=gcc
 OPTIONS=-DSSE2_ENABLE -DFFTMTX
 
-LIBS=$(FEC)/linux/libfec.a
+LIBS=../../third-party/libfec/build/libfec.a
 
 OBS= sdrmain.o sdrcmn.o sdracq.o sdrcode.o sdrinit.o sdrnav.o\
      sdrnav_gps.o sdrnav_glo.o sdrnav_gal.o sdrnav_bds.o sdrnav_sbs.o\
@@ -44,6 +44,12 @@ BIN= gnss-sdrcli
 $(BIN): $(OBS)
 	 $(CXX) -o $(BIN) $(OBS) $(CFLAGS) $(LDLIBS)
 	 @cp $(BIN) ../../bin
+
+.PHONY: libfec
+libfec: ../../third-party/libfec/build/libfec.a
+
+../../third-party/libfec/build/libfec.a:
+	cd ../../third-party/libfec && mkdir -p build && cd build && cmake .. && make -j
 
 sdrmain.o: $(SRC)/sdrmain.cpp
 	$(CXX) -c $(CFLAGS) $(SRC)/sdrmain.cpp
