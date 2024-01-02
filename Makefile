@@ -10,7 +10,7 @@ USE_BLADERF=0
 INCLUDE = \
 	-Isrc \
 	-Ilib/rtklib \
-	-Ilib/fec \
+	-Ithird-party/libfec \
 	-Isrc/rcv/rtlsdr \
 	-Isrc/rcv/bladerf
 
