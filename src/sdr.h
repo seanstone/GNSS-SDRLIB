@@ -87,7 +87,7 @@ using namespace gnsssdrgui;
 #include "fec.h"
 #include "fftw3.h"
 #include "rtklib.h"
-#include "libusb-1.0/libusb.h"
+#include "libusb.h"
 #ifdef GN3S
 #include "gn3s.h"
 #include "gn3s/simple_rf.h"

@@ -13,9 +13,12 @@ INCLUDE = \
 	-Ithird-party/libfec \
 	-Isrc/rcv/rtlsdr \
 	-Isrc/rcv/bladerf
+INCLUDE += $(shell pkg-config --cflags fftw3f)
+INCLUDE += $(shell pkg-config --cflags libusb-1.0)
 
 CC=gcc
-OPTIONS=-DSSE2_ENABLE -DFFTMTX
+#OPTIONS += -DSSE2_ENABLE
+OPTIONS += -DFFTMTX
 
 LIBS=third-party/libfec/build/libfec.a
 
@@ -59,12 +62,16 @@ endif
 
 OBJS = $(patsubst %, build/%.o, $(SRCS))
 
-CFLAGS=-Wall -O3 -march=native $(INCLUDE) $(OPTIONS) -g
-LDLIBS=-lm -lrt -lfftw3f -lfftw3f_threads -lpthread $(LIBS) -lusb-1.0
+CPPFLAGS += -Wall -O3 -march=native $(INCLUDE) $(OPTIONS) -g
+CXXFLAGS += --std=c++11
 
-bin/gnss-sdrcli: $(OBJS)
+LDLIBS += $(shell pkg-config --libs fftw3f)
+LDLIBS += $(shell pkg-config --libs libusb-1.0)
+LDLIBS += -lm -lfftw3f_threads -lpthread $(LIBS)
+
+bin/gnss-sdrcli: $(OBJS) third-party/libfec/build/libfec.a
 	mkdir -p $(@D)
-	 $(CXX) $(OBJS) $(CFLAGS) $(LDLIBS) -o $@
+	$(CXX) $(OBJS) $(CPPFLAGS) $(CXXFLAGS) $(LDLIBS) -o $@
 
 .PHONY: libfec
 libfec: third-party/libfec/build/libfec.a
@@ -74,11 +81,11 @@ third-party/libfec/build/libfec.a:
 
 build/%.c.o : %.c
 	mkdir -p $(@D)
-	$(CC) -c $< $(CFLAGS) -o $@
+	$(CC) -c $< $(CPPFLAGS) $(CFLAGS) -o $@
 
 build/%.cpp.o : %.cpp
 	mkdir -p $(@D)
-	$(CXX) -c $< $(CFLAGS) -o $@
+	$(CXX) -c $< $(CPPFLAGS) $(CXXFLAGS) -o $@
 
 sdrmain.o: $(SRC)/sdr.h
 sdrcmn.o : $(SRC)/sdr.h
