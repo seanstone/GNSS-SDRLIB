@@ -7,20 +7,17 @@
 USE_RTLSDR=0
 USE_BLADERF=0
 
-INCLUDE = \
+CPPFLAGS += \
 	-Isrc \
 	-Ilib/rtklib \
 	-Ithird-party/libfec \
 	-Isrc/rcv/rtlsdr \
 	-Isrc/rcv/bladerf
-INCLUDE += $(shell pkg-config --cflags fftw3f)
-INCLUDE += $(shell pkg-config --cflags libusb-1.0)
+CPPFLAGS += $(shell pkg-config --cflags fftw3f)
+CPPFLAGS += $(shell pkg-config --cflags libusb-1.0)
 
-CC=gcc
-#OPTIONS += -DSSE2_ENABLE
-OPTIONS += -DFFTMTX
-
-LIBS=third-party/libfec/build/libfec.a
+#CPPFLAGS += -DSSE2_ENABLE
+CPPFLAGS += -DFFTMTX
 
 SRCS = \
 	src/sdrmain.cpp \
@@ -49,29 +46,29 @@ SRCS = \
 	lib/rtklib/rinex.c \
 
 ifeq ($(USE_RTLSDR),1)
-OPTIONS+=-DRTLSDR
-LIBS+=-lrtlsdr
-SRCS+= src/rcv/rtlsdr/rtlsdr.c src/rcv/rtlsdr/convenience.c
+CPPFLAGS += -DRTLSDR
+LDLIBS += -lrtlsdr
+SRCS += src/rcv/rtlsdr/rtlsdr.c src/rcv/rtlsdr/convenience.c
 endif
 
 ifeq ($(USE_BLADERF),1)
-OPTIONS+=-DBLADERF
-LIBS+=-lbladeRF
-SRCS+=src/rcv/bladerf/bladerf.c
+CPPFLAGS += -DBLADERF
+LDLIB += -lbladeRF
+SRCS += src/rcv/bladerf/bladerf.c
 endif
 
 OBJS = $(patsubst %, build/%.o, $(SRCS))
 
-CPPFLAGS += -Wall -O3 -march=native $(INCLUDE) $(OPTIONS) -g
+CPPFLAGS += -Wall -O3 -march=native -g
 CXXFLAGS += --std=c++11
 
 LDLIBS += $(shell pkg-config --libs fftw3f)
 LDLIBS += $(shell pkg-config --libs libusb-1.0)
-LDLIBS += -lm -lfftw3f_threads -lpthread $(LIBS)
+LDLIBS += -lm -lfftw3f_threads -lpthread
 
 bin/gnss-sdrcli: $(OBJS) third-party/libfec/build/libfec.a
 	mkdir -p $(@D)
-	$(CXX) $(OBJS) $(CPPFLAGS) $(CXXFLAGS) $(LDLIBS) -o $@
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $^ $(LDLIBS) -o $@
 
 .PHONY: libfec
 libfec: third-party/libfec/build/libfec.a
