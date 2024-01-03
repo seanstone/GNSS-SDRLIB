@@ -66,10 +66,10 @@ extern int updatepltini(int nx, int ny, int posx, int posy)
         SDRPRINTF("error: updatepltini path=%s \n",apppath);
         return -1;
     }
-    fprintf(fp,"set terminal x11 ");
-    fprintf(fp,"size %d,%d ",nx,ny);
-    fprintf(fp,"position %d,%d ",posx,posy);
-    fprintf(fp,"enhanced font \"Arial,12\"\n");
+    // fprintf(fp,"set terminal x11 ");
+    // fprintf(fp,"size %d,%d ",nx,ny);
+    // fprintf(fp,"position %d,%d ",posx,posy);
+    // fprintf(fp,"enhanced font \"Arial,12\"\n");
     fflush(fp);
     fclose(fp);
 #endif
