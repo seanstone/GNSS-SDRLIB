@@ -145,7 +145,7 @@ extern void startsdr(void) /* call as function */
     openhandles();
 
     /* create threads */
-    cratethread(hsyncthread,syncthread,NULL); /* synchronization thread */
+    //cratethread(hsyncthread,syncthread,NULL); /* synchronization thread */
 
     /* sdr channel thread */
     for (i=0;i<sdrini.nch;i++) {
